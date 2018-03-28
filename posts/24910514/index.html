@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="写在前面 这里是系列中的第一篇文章。该系列旨在实现并尽可能用通俗易懂的方式描述《算法新解》中的内容。 什么是最小可用 id？ 很多数据都包含 id 这个概念，通常情况下是非负整数，用来唯一标识一条数据。很多 id 处于使用中的状态，也就是已经绑定到一条数据，而另一些 id 处于未使用的状态，可以分配给新的数据。最小可用 id 就是这些数据中最小的可分配 id。 例如，下面是正在使用中的 i">
+<meta name="keywords" content="弱者为何要战斗？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="最小可用 id">
+<meta property="og:url" content="https://mislink.github.io/posts/24910514/index.html">
+<meta property="og:site_name" content="Opstio">
+<meta property="og:description" content="写在前面 这里是系列中的第一篇文章。该系列旨在实现并尽可能用通俗易懂的方式描述《算法新解》中的内容。 什么是最小可用 id？ 很多数据都包含 id 这个概念，通常情况下是非负整数，用来唯一标识一条数据。很多 id 处于使用中的状态，也就是已经绑定到一条数据，而另一些 id 处于未使用的状态，可以分配给新的数据。最小可用 id 就是这些数据中最小的可分配 id。 例如，下面是正在使用中的 i">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-03-28T15:56:02.177Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="最小可用 id">
+<meta name="twitter:description" content="写在前面 这里是系列中的第一篇文章。该系列旨在实现并尽可能用通俗易懂的方式描述《算法新解》中的内容。 什么是最小可用 id？ 很多数据都包含 id 这个概念，通常情况下是非负整数，用来唯一标识一条数据。很多 id 处于使用中的状态，也就是已经绑定到一条数据，而另一些 id 处于未使用的状态，可以分配给新的数据。最小可用 id 就是这些数据中最小的可分配 id。 例如，下面是正在使用中的 i">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>最小可用 id</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/atom.xml" title="Opstio" type="application/atom+xml" />
+    
+</head>
+
+<body class="max-width mx-auto px3">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/Search/">Search</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://mislink.github.io/posts/24910514/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://mislink.github.io/posts/24910514/&text=最小可用 id"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://mislink.github.io/posts/24910514/&title=最小可用 id"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://mislink.github.io/posts/24910514/&is_video=false&description=最小可用 id"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=最小可用 id&body=Check out this article: https://mislink.github.io/posts/24910514/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://mislink.github.io/posts/24910514/&title=最小可用 id"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://mislink.github.io/posts/24910514/&title=最小可用 id"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://mislink.github.io/posts/24910514/&title=最小可用 id"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://mislink.github.io/posts/24910514/&title=最小可用 id"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://mislink.github.io/posts/24910514/&name=最小可用 id&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#写在前面"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是最小可用-id"><span class="toc-number">2.</span> <span class="toc-text">什么是最小可用 id？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#naïve-的解法"><span class="toc-number">3.</span> <span class="toc-text">naïve 的解法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#改进一"><span class="toc-number">4.</span> <span class="toc-text">改进一</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#改进二"><span class="toc-number">5.</span> <span class="toc-text">改进二</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index my4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        最小可用 id
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">MisLink</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2018-03-28T13:42:51.000Z" itemprop="datePublished">2018-03-28</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/弱者为何要战斗？/">弱者为何要战斗？</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="写在前面">写在前面</h2>
+<p>这里是系列中的第一篇文章。该系列旨在实现并尽可能用通俗易懂的方式描述《算法新解》中的内容。</p>
+<h2 id="什么是最小可用-id">什么是最小可用 id？</h2>
+<p>很多数据都包含 id 这个概念，通常情况下是非负整数，用来唯一标识一条数据。很多 id 处于使用中的状态，也就是已经绑定到一条数据，而另一些 id 处于未使用的状态，可以分配给新的数据。最小可用 id 就是这些数据中最小的可分配 id。</p>
+<p>例如，下面是正在使用中的 id：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">13</span>, <span class="number">2</span>, <span class="number">5</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">9</span>, <span class="number">12</span>, <span class="number">8</span>, <span class="number">11</span>, <span class="number">14</span>]</span><br></pre></td></tr></table></figure>
+<p>最小可用 id 就是不在这个列表中的最小的非负整数，即 3。</p>
+<h2 id="naïve-的解法">naïve 的解法</h2>
+<p>最直观的方法如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">brute_force</span><span class="params">(lst)</span>:</span></span><br><span class="line">    i = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        <span class="keyword">if</span> i <span class="keyword">not</span> <span class="keyword">in</span> lst:</span><br><span class="line">            <span class="keyword">return</span> i</span><br><span class="line">        i += <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>以上 python 代码中，<code>in</code> 操作是线性的，这意味着上述代码的时间复杂度为 <span class="math inline">\(O(n^2)\)</span>。对于 10 万个 id 而言，该程序平均需要 11.5s 才能得到答案。</p>
+<h2 id="改进一">改进一</h2>
+<p>改进上述解法的关键是：</p>
+<blockquote>
+<p>对于 <span class="math inline">\(n\)</span> 个非负整数 <span class="math inline">\(x_1, x_2, ..., x_n\)</span> ，如果存在小于 <span class="math inline">\(n\)</span> 的可用整数，则必然存在某个 <span class="math inline">\(x_i\)</span> 不在 <span class="math inline">\([0, n)\)</span> 的范围内；否则这些整数必然为 <span class="math inline">\(0, 1, ..., n-1\)</span> 的排列，这时最小的可用整数为 <span class="math inline">\(n\)</span>。</p>
+</blockquote>
+<p>于是可以得出如下结论： <span class="math display">\[
+minFree(x_1, x_2, ..., x_n) \leqslant n
+\]</span> 在这一结论的基础下，可以使用长度为 n + 1 的数组标记区间 <span class="math inline">\([0, n]\)</span> 内的某个整数是否可用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">min_free</span><span class="params">(lst)</span>:</span></span><br><span class="line">    n = len(lst)</span><br><span class="line">    flags = [<span class="keyword">False</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(n + <span class="number">1</span>)]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> lst:</span><br><span class="line">        <span class="keyword">if</span> i &lt; n:</span><br><span class="line">            flags[i] = <span class="keyword">True</span></span><br><span class="line">    <span class="keyword">for</span> i, f <span class="keyword">in</span> enumerate(flags):</span><br><span class="line">        <span class="keyword">if</span> f <span class="keyword">is</span> <span class="keyword">False</span>:</span><br><span class="line">            <span class="keyword">return</span> i</span><br></pre></td></tr></table></figure>
+<p>该解法由三个步骤组成：</p>
+<ol type="1">
+<li>第 3 行，初始化一个值全为 <code>False</code> 的标志数组，需要 <span class="math inline">\(O(n)\)</span> 的时间；</li>
+<li>第 4 ~ 6 行，遍历列表中的元素，将小于 n 的元素标记为 <code>True</code>，需要 <span class="math inline">\(O(n)\)</span> 的时间；</li>
+<li>第 7 ~ 9 行，遍历标志数组，返回第一个<code>False</code> 值的位置，需要 <span class="math inline">\(O(n)\)</span> 的时间；</li>
+</ol>
+<p>每个步骤所需的时间均为 <span class="math inline">\(O(n)\)</span> ，所以该解法的时间复杂度是线性的。</p>
+<p>这里用到了 n + 1 个标志，使这个解法无需额外处理就可以适配 <code>sorted(lst) = [0, 1, ... n - 1]</code> 的情况。</p>
+<p>这个解法的效率比上一个解法高得多：同样对于 10 万个 id，只需要 0.02s 就可以得到答案。</p>
+<p>该解法每次都需要申请一个长度为 n + 1 的数组，运行结束后这个数组又被释放掉了。为了对此进行优化，原书提供了对应的 C 语言实现的改进：</p>
+<ol type="1">
+<li>预先准备好足够长的数组，然后每次都复用它；</li>
+<li>使用二进制位保存标志；</li>
+</ol>
+<p>以上改进减少了反复创建和销毁标志数组的时间，也减少了标志数组占据的空间，但是对应的位运算相比之前的布尔数组繁复了很多，在此就不再赘述。</p>
+<h2 id="改进二">改进二</h2>
+<p>上述的改进以空间上的消耗为代价获得了运行时间上的优化，但是在 n 特别大的情况下，空间上的损耗就不可忽略了。为此，新的改进基于分而治之的方法，将问题分解为若干规模较小的问题，然后逐步解决这些小问题，最终得到结果。</p>
+<p>对这个问题应用分治，可以得出如下解法：</p>
+<blockquote>
+<p>将所有满足 <span class="math inline">\(x_i \leqslant \lfloor n/2 \rfloor\)</span> 的整数放入序列 <span class="math inline">\(A&#39;\)</span>，并将剩余的整数放入另一个序列 <span class="math inline">\(A&#39;&#39;\)</span>，根据上一个改进得出的结论，如果 <span class="math inline">\(A&#39;\)</span> 的长度正好是 $ n/2 $，这说明 <span class="math inline">\(A&#39;\)</span> 已经“满”了，最小的可用整数一定在 <span class="math inline">\(A&#39;&#39;\)</span> 中；否则，最小的可用整数一定在 <span class="math inline">\(A&#39;\)</span> 中。</p>
+</blockquote>
+<p>在很多编程语言中都提供了划分操作：</p>
+<ol type="1">
+<li><p>haskell <code>Data.List.partition</code></p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Data.List</span><br><span class="line"></span><br><span class="line"><span class="title">bsearch</span> :: [<span class="type">Int</span>] -&gt; <span class="type">Int</span> -&gt; <span class="type">Int</span> -&gt; <span class="type">Int</span></span><br><span class="line"><span class="title">bsearch</span> xs l u | null xs                = l</span><br><span class="line">               | length <span class="keyword">as</span> == m - l + <span class="number">1</span> = bsearch bs (m + <span class="number">1</span>) u</span><br><span class="line">               | otherwise              = bsearch <span class="keyword">as</span> l m</span><br><span class="line"> <span class="keyword">where</span></span><br><span class="line">  m        = (l + u) `div` <span class="number">2</span></span><br><span class="line">  (<span class="keyword">as</span>, bs) = partition (&lt;= m) xs</span><br><span class="line"></span><br><span class="line"><span class="title">minFree</span> :: [<span class="type">Int</span>] -&gt; <span class="type">Int</span></span><br><span class="line"><span class="title">minFree</span> xs = bsearch xs <span class="number">0</span> (length xs - <span class="number">1</span>)</span><br></pre></td></tr></table></figure></li>
+<li><p>python <code>列表推导式</code> 或 <code>filter</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">min_free</span><span class="params">(lst, l, u)</span>:</span></span><br><span class="line">    m = (l + u) // <span class="number">2</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> lst:</span><br><span class="line">        <span class="keyword">return</span> l</span><br><span class="line">    left = [i <span class="keyword">for</span> i <span class="keyword">in</span> lst <span class="keyword">if</span> i &lt;= m]</span><br><span class="line">    right = [i <span class="keyword">for</span> i <span class="keyword">in</span> lst <span class="keyword">if</span> i &gt; m]</span><br><span class="line">    <span class="keyword">if</span> len(left) == m - l + <span class="number">1</span>:</span><br><span class="line">        <span class="keyword">return</span> min_free(right, m + <span class="number">1</span>, u)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> min_free(left, l, m)</span><br></pre></td></tr></table></figure></li>
+<li><p>c++ <code>partition</code></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">min_free</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;::iterator begin, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;::iterator end, <span class="keyword">int</span> l,</span></span></span><br><span class="line"><span class="function"><span class="params">             <span class="keyword">int</span> u)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> m = (l + u) / <span class="number">2</span>;</span><br><span class="line">  <span class="keyword">if</span> (begin == end) &#123;</span><br><span class="line">    <span class="keyword">return</span> l;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">auto</span> it = partition(begin, end, [m](<span class="keyword">int</span> i) &#123; <span class="keyword">return</span> i &lt;= m; &#125;);</span><br><span class="line">  <span class="keyword">if</span> (it - begin == m - l + <span class="number">1</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> min_free(it, end, m + <span class="number">1</span>, u);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> min_free(begin, it, l, m);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>上述解法的时间复杂度为 <span class="math inline">\(O(n)\)</span>：第一次需要 <span class="math inline">\(O(n)\)</span> 次比较来划分子序列 <span class="math inline">\(A&#39;\)</span> 和 <span class="math inline">\(A&#39;&#39;\)</span>，第二次需要 <span class="math inline">\(O(n/2)\)</span> 次，第三次需要 <span class="math inline">\(O(n/4)\)</span> 次 … ，总时间复杂度为 <span class="math inline">\(O(n+n/2+n/4+...) = O(2n) = O(n)\)</span>。</p>
+<p>该解法不需要使用额外的栈空间保存递归调用，是因为其中的递归调用都是尾递归，在函数式语言中等同于迭代；c++ 可以通过开启优化选项消除尾递归；特别的，python 不支持尾递归优化。在这种情况下，空间复杂度为递归深度 <span class="math inline">\(O(\lg n)\)</span>。为了避免额外的空间占用，可以手工将递归转换为迭代：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">min_free</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;lst)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> l = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">int</span> u = lst.size() - <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">auto</span> begin = lst.begin();</span><br><span class="line">  <span class="keyword">auto</span> end = lst.end();</span><br><span class="line">  <span class="keyword">while</span> (end - begin) &#123;</span><br><span class="line">    <span class="keyword">int</span> m = (l + u) / <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">auto</span> left = partition(begin, end, [m](<span class="keyword">int</span> i) &#123; <span class="keyword">return</span> i &lt;= m; &#125;);</span><br><span class="line">    <span class="keyword">if</span> (left - begin == m - l + <span class="number">1</span>) &#123;</span><br><span class="line">      begin = left;</span><br><span class="line">      l = m + <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      end = left;</span><br><span class="line">      u = m;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> l;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段程序使用了类似快速排序的分割方法，将数组中的元素分为了两部分：所有 left 之前的元素都小于等于 m，所有 left 和 right 之间的元素都大于 m。</p>
+
+  </div>
+</article>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/Search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#写在前面"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是最小可用-id"><span class="toc-number">2.</span> <span class="toc-text">什么是最小可用 id？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#naïve-的解法"><span class="toc-number">3.</span> <span class="toc-text">naïve 的解法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#改进一"><span class="toc-number">4.</span> <span class="toc-text">改进一</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#改进二"><span class="toc-number">5.</span> <span class="toc-text">改进二</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://mislink.github.io/posts/24910514/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://mislink.github.io/posts/24910514/&text=最小可用 id"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://mislink.github.io/posts/24910514/&title=最小可用 id"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://mislink.github.io/posts/24910514/&is_video=false&description=最小可用 id"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=最小可用 id&body=Check out this article: https://mislink.github.io/posts/24910514/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://mislink.github.io/posts/24910514/&title=最小可用 id"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://mislink.github.io/posts/24910514/&title=最小可用 id"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://mislink.github.io/posts/24910514/&title=最小可用 id"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://mislink.github.io/posts/24910514/&title=最小可用 id"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://mislink.github.io/posts/24910514/&name=最小可用 id&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+    
+    <div style="font-size: 11px; color: #666">This work is licensed under a
+  <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" style="color: #fafafa">CC BY-NC-SA 4.0 International License</a>.</div>
+<footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2018 MisLink
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/Search/">Search</a></li>
+        
+        
+          <li><a href="/atom.xml">Rss</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
