@@ -1,3 +1,6 @@
 [submodule ".\\themes\\cactus"]
 	path = .\\themes\\cactus
 	url = git@github.com:MisLink/hexo-theme-cactus.git
+[submodule ".deploy_git"]
+	path = .deploy_git
+	url = git@github.com:MisLink/MisLink.github.io.git
