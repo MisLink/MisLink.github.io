@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="前言 前五篇文章介绍了 asyncio 的 API，从这篇开始，就要讲一些 Real World（并不）的东西了。 使用 aiohttp 作为 HTTP 客户端 aiohttp 是一个基于 asyncio 的异步 HTTP 客户端和服务器库，也是 asyncio 生态中发展最迅速的第三方库之一。在这一节，我们使用 aiohttp 作为 HTTP 客户端来比较一下同步、基于线程的异步和基于 asyn">
+<meta name="keywords" content="Python,asyncio">
+<meta property="og:type" content="article">
+<meta property="og:title" content="asyncio 不完全指北（六）">
+<meta property="og:url" content="https://mislink.github.io/posts/691d18bc/index.html">
+<meta property="og:site_name" content="Opstio">
+<meta property="og:description" content="前言 前五篇文章介绍了 asyncio 的 API，从这篇开始，就要讲一些 Real World（并不）的东西了。 使用 aiohttp 作为 HTTP 客户端 aiohttp 是一个基于 asyncio 的异步 HTTP 客户端和服务器库，也是 asyncio 生态中发展最迅速的第三方库之一。在这一节，我们使用 aiohttp 作为 HTTP 客户端来比较一下同步、基于线程的异步和基于 asyn">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-07-07T10:12:54.452Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="asyncio 不完全指北（六）">
+<meta name="twitter:description" content="前言 前五篇文章介绍了 asyncio 的 API，从这篇开始，就要讲一些 Real World（并不）的东西了。 使用 aiohttp 作为 HTTP 客户端 aiohttp 是一个基于 asyncio 的异步 HTTP 客户端和服务器库，也是 asyncio 生态中发展最迅速的第三方库之一。在这一节，我们使用 aiohttp 作为 HTTP 客户端来比较一下同步、基于线程的异步和基于 asyn">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>asyncio 不完全指北（六）</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/posts/1e1a282a/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/posts/f0144906/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://mislink.github.io/posts/691d18bc/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://mislink.github.io/posts/691d18bc/&text=asyncio 不完全指北（六）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://mislink.github.io/posts/691d18bc/&title=asyncio 不完全指北（六）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://mislink.github.io/posts/691d18bc/&is_video=false&description=asyncio 不完全指北（六）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=asyncio 不完全指北（六）&body=Check out this article: https://mislink.github.io/posts/691d18bc/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://mislink.github.io/posts/691d18bc/&title=asyncio 不完全指北（六）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://mislink.github.io/posts/691d18bc/&title=asyncio 不完全指北（六）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://mislink.github.io/posts/691d18bc/&title=asyncio 不完全指北（六）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://mislink.github.io/posts/691d18bc/&title=asyncio 不完全指北（六）"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://mislink.github.io/posts/691d18bc/&name=asyncio 不完全指北（六）&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用-aiohttp-作为-http-客户端"><span class="toc-number">2.</span> <span class="toc-text">使用 aiohttp 作为 HTTP 客户端</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#准备工作"><span class="toc-number">2.1.</span> <span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#同步的请求"><span class="toc-number">2.2.</span> <span class="toc-text">同步的请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基于线程的请求"><span class="toc-number">2.3.</span> <span class="toc-text">基于线程的请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基于-asyncio-的请求"><span class="toc-number">2.4.</span> <span class="toc-text">基于 asyncio 的请求</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#保存请求的结果"><span class="toc-number">2.4.1.</span> <span class="toc-text">保存请求的结果</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index my4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        asyncio 不完全指北（六）
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">MisLink</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2018-05-27T10:39:08.000Z" itemprop="datePublished">2018-05-27</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/Python/">Python</a>, <a class="tag-link" href="/tags/asyncio/">asyncio</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="前言">前言</h2>
+<p>前五篇文章介绍了 <code>asyncio</code> 的 API，从这篇开始，就要讲一些 Real World（并不）的东西了。</p>
+<h2 id="使用-aiohttp-作为-http-客户端">使用 aiohttp 作为 HTTP 客户端</h2>
+<p><a href="https://docs.aiohttp.org/en/stable/index.html" target="_blank" rel="noopener">aiohttp</a> 是一个基于 <code>asyncio</code> 的异步 HTTP 客户端和服务器库，也是 <code>asyncio</code> 生态中发展最迅速的第三方库之一。在这一节，我们使用 aiohttp 作为 HTTP 客户端来比较一下同步、基于线程的异步和基于 <code>asyncio</code> 的异步的差别。</p>
+<h3 id="准备工作">准备工作</h3>
+<p>首先我们安装好所需的第三方库：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install requests</span><br><span class="line">pip install aiohttp</span><br></pre></td></tr></table></figure>
+<p>准备一些用于并发请求的 url，共 45 个：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># url.py</span></span><br><span class="line">urls = [</span><br><span class="line">    <span class="string">'http://caipiao.hao123.com/'</span>, <span class="string">'http://game.hao123.com/'</span>,</span><br><span class="line">    <span class="string">'http://mail.10086.cn/'</span>, <span class="string">'http://mail.126.com/'</span>, <span class="string">'http://mail.163.com/'</span>,</span><br><span class="line">    <span class="string">'http://mail.aliyun.com/'</span>, <span class="string">'http://mail.qq.com/'</span>,</span><br><span class="line">    <span class="string">'http://mail.sina.com.cn/'</span>, <span class="string">'http://music.163.com/'</span>,</span><br><span class="line">    <span class="string">'http://tuijian.hao123.com/'</span>, <span class="string">'http://www.12306.cn/'</span>, <span class="string">'http://www.163.com/'</span>,</span><br><span class="line">    <span class="string">'http://www.37.com/'</span>, <span class="string">'http://www.4399.com/'</span>, <span class="string">'http://www.abchina.com/'</span>,</span><br><span class="line">    <span class="string">'http://www.baidu.com/'</span>, <span class="string">'http://www.bankcomm.com/'</span>, <span class="string">'http://www.boc.cn/'</span>,</span><br><span class="line">    <span class="string">'http://www.ccb.com/'</span>, <span class="string">'http://www.chsi.com.cn/'</span>,</span><br><span class="line">    <span class="string">'http://www.cmbchina.com/'</span>, <span class="string">'http://www.cnki.net/'</span>,</span><br><span class="line">    <span class="string">'http://www.eastmoney.com/'</span>, <span class="string">'http://www.fang.com/'</span>,</span><br><span class="line">    <span class="string">'http://www.icbc.com.cn/icbc/'</span>, <span class="string">'http://www.ifeng.com'</span>,</span><br><span class="line">    <span class="string">'http://www.iqiyi.com/'</span>, <span class="string">'http://www.psbc.com/'</span>, <span class="string">'http://www.qq.com/'</span>,</span><br><span class="line">    <span class="string">'http://www.sina.com.cn/'</span>, <span class="string">'http://www.sohu.com/'</span>, <span class="string">'http://www.tianya.cn/'</span>,</span><br><span class="line">    <span class="string">'http://www.zhihu.com/'</span>, <span class="string">'http://wyyx.hao123.com/'</span>, <span class="string">'https://mail.qq.com/'</span>,</span><br><span class="line">    <span class="string">'https://mail.sohu.com/'</span>, <span class="string">'https://tieba.baidu.com/'</span>, <span class="string">'https://weibo.com/'</span>,</span><br><span class="line">    <span class="string">'https://www.autohome.com.cn/'</span>, <span class="string">'https://www.bilibili.com/'</span>,</span><br><span class="line">    <span class="string">'https://www.booking.com/'</span>, <span class="string">'https://www.douyu.com/'</span>,</span><br><span class="line">    <span class="string">'https://www.qunar.com/'</span>, <span class="string">'https://www.suning.com/'</span>,</span><br><span class="line">    <span class="string">'https://www.taobao.com/'</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h3 id="同步的请求">同步的请求</h3>
+<p>首先导入所需的库：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> url <span class="keyword">import</span> urls</span><br></pre></td></tr></table></figure>
+<p>完成请求单个 url 的函数，这个函数会以 <code>bytes</code> 形式返回网站内容：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fetch</span><span class="params">(session, url)</span>:</span></span><br><span class="line">    resp = session.get(url)</span><br><span class="line">    <span class="keyword">return</span> resp.content</span><br></pre></td></tr></table></figure>
+<p>同步请求所有的 url，打印出字节的长度：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    session = requests.Session()</span><br><span class="line">    <span class="keyword">for</span> url <span class="keyword">in</span> urls:</span><br><span class="line">        data = fetch(session, url)</span><br><span class="line">        print(<span class="string">f'<span class="subst">&#123;url&#125;</span>: <span class="subst">&#123;len(data)&#125;</span>'</span>)</span><br></pre></td></tr></table></figure>
+<p>记录完成请求所需的时间：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    start = time.time()</span><br><span class="line">    main()</span><br><span class="line">    print(time.time() - start)</span><br></pre></td></tr></table></figure>
+<p>上述代码的结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http://caipiao.hao123.com/: 109299</span><br><span class="line">http://game.hao123.com/: 179707</span><br><span class="line">http://mail.10086.cn/: 52500</span><br><span class="line">http://mail.126.com/: 13063</span><br><span class="line">http://mail.163.com/: 137118</span><br><span class="line">http://mail.aliyun.com/: 725</span><br><span class="line">http://mail.qq.com/: 8206</span><br><span class="line">http://mail.sina.com.cn/: 2837</span><br><span class="line">http://music.163.com/: 92606</span><br><span class="line">...</span><br><span class="line">https://www.autohome.com.cn/: 656200</span><br><span class="line">https://www.bilibili.com/: 26642</span><br><span class="line">https://www.booking.com/: 457842</span><br><span class="line">https://www.douyu.com/: 75286</span><br><span class="line">https://www.qunar.com/: 140898</span><br><span class="line">https://www.suning.com/: 188523</span><br><span class="line">https://www.taobao.com/: 126283</span><br><span class="line">24.28531312942505</span><br></pre></td></tr></table></figure>
+<p>可以看出打印的顺序是和 url 列表的顺序完全一致的，同步的代码耗时约 24s。</p>
+<h3 id="基于线程的请求">基于线程的请求</h3>
+<p>首先导入所需的库：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> concurrent.futures <span class="keyword">import</span> ThreadPoolExecutor, as_completed</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> url <span class="keyword">import</span> urls</span><br></pre></td></tr></table></figure>
+<p>完成单个请求的函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fetch</span><span class="params">(session, url)</span>:</span></span><br><span class="line">    resp = session.get(url)</span><br><span class="line">    <span class="keyword">return</span> resp.content</span><br></pre></td></tr></table></figure>
+<p>使用线程池请求所有的 url：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    session = requests.Session()</span><br><span class="line">    <span class="keyword">with</span> ThreadPoolExecutor() <span class="keyword">as</span> executor:</span><br><span class="line">        tasks = &#123;executor.submit(fetch, session, url): url <span class="keyword">for</span> url <span class="keyword">in</span> urls&#125;</span><br><span class="line">        <span class="keyword">for</span> task <span class="keyword">in</span> as_completed(tasks.keys()):</span><br><span class="line">            data = task.result()</span><br><span class="line">            print(<span class="string">f'<span class="subst">&#123;tasks[task]&#125;</span>: <span class="subst">&#123;len(data)&#125;</span>'</span>)</span><br></pre></td></tr></table></figure>
+<p>记录完成所需的时间：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    start = time.time()</span><br><span class="line">    main()</span><br><span class="line">    print(time.time() - start)</span><br></pre></td></tr></table></figure>
+<p>上述代码的结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http://www.ccb.com/: 276</span><br><span class="line">http://www.12306.cn/: 1480</span><br><span class="line">http://www.cnki.net/: 59235</span><br><span class="line">http://mail.aliyun.com/: 725</span><br><span class="line">http://www.tianya.cn/: 7867</span><br><span class="line">http://www.icbc.com.cn/icbc/: 157227</span><br><span class="line">http://www.bankcomm.com/: 3473</span><br><span class="line">http://www.chsi.com.cn/: 34188</span><br><span class="line">http://mail.sina.com.cn/: 2837</span><br><span class="line">...</span><br><span class="line">http://www.sina.com.cn/: 584540</span><br><span class="line">https://tieba.baidu.com/: 137714</span><br><span class="line">https://www.autohome.com.cn/: 656154</span><br><span class="line">https://www.taobao.com/: 126283</span><br><span class="line">https://www.booking.com/: 457849</span><br><span class="line">http://www.iqiyi.com/: 599940</span><br><span class="line">http://tuijian.hao123.com/: 511465</span><br><span class="line">9.722297191619873</span><br></pre></td></tr></table></figure>
+<p>可以看到返回结果的顺序并不和 url 列表一致，准确的说，是按照请求完成的顺序排列的。同时，请求所需的时间大幅缩短，降到了约 9s。</p>
+<h3 id="基于-asyncio-的请求">基于 <code>asyncio</code> 的请求</h3>
+<p>首先导入所需的库：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> aiohttp</span><br><span class="line"><span class="keyword">from</span> url <span class="keyword">import</span> urls</span><br></pre></td></tr></table></figure>
+<p>完成单个请求的函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">fetch</span><span class="params">(session, url)</span>:</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">with</span> session.get(url) <span class="keyword">as</span> resp:</span><br><span class="line">        <span class="keyword">return</span> url, <span class="keyword">await</span> resp.read()</span><br></pre></td></tr></table></figure>
+<p>这里同时返回了请求的 url 和网站内容，是因为后面的代码不容易在请求完成后获得请求的 url。</p>
+<p>使用 <code>aiohttp</code> 请求所有的 url：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">with</span> aiohttp.ClientSession() <span class="keyword">as</span> session:</span><br><span class="line">        tasks = [fetch(session, url) <span class="keyword">for</span> url <span class="keyword">in</span> urls]</span><br><span class="line">        <span class="keyword">for</span> task <span class="keyword">in</span> asyncio.as_completed(tasks):</span><br><span class="line">            url, data = <span class="keyword">await</span> task</span><br><span class="line">            print(<span class="string">f'<span class="subst">&#123;url&#125;</span>: <span class="subst">&#123;len(data)&#125;</span>'</span>)</span><br></pre></td></tr></table></figure>
+<p>开启事件循环，并记录所需的时间：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    start = time.time()</span><br><span class="line">    loop = asyncio.get_event_loop()</span><br><span class="line">    loop.run_until_complete(main())</span><br><span class="line">    print(time.time() - start)</span><br></pre></td></tr></table></figure>
+<p>上述代码的结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">http://www.psbc.com/: 404</span><br><span class="line">http://www.eastmoney.com/: 392883</span><br><span class="line">http://www.icbc.com.cn/icbc/: 157227</span><br><span class="line">http://www.ifeng.com: 438464</span><br><span class="line">http://mail.aliyun.com/: 725</span><br><span class="line">http://www.tianya.cn/: 7867</span><br><span class="line">...</span><br><span class="line">http://tuijian.hao123.com/: 510052</span><br><span class="line">http://mail.qq.com/: 8023</span><br><span class="line">http://game.hao123.com/: 179707</span><br><span class="line">https://tieba.baidu.com/: 137723</span><br><span class="line">http://www.iqiyi.com/: 599830</span><br><span class="line">https://www.taobao.com/: 126283</span><br><span class="line">https://weibo.com/: 6117</span><br><span class="line">http://www.zhihu.com/: 22696</span><br><span class="line">https://www.booking.com/: 457851</span><br><span class="line">2.0516560077667236</span><br></pre></td></tr></table></figure>
+<p>和使用线程一样，返回结果是按照请求完成顺序排列的。请求的时间比线程更短，只用了约 2s 就完成了所有的请求。和使用线程的方式相比，<code>asyncio</code> 避免了创建线程的开销。</p>
+<h4 id="保存请求的结果">保存请求的结果</h4>
+<p>需要注意的是，上述请求只是简单的获取了内容，这些 bytes 只在内存中存在。一旦我们需要把结果保存到磁盘，就会有另一个会导致异步代码退化到同步的地方：磁盘 I / O。</p>
+<p>现在我们增加一个保存请求内容到磁盘的函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> urllib.parse <span class="keyword">import</span> quote_plus</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">save_to_file</span><span class="params">(filename, data)</span>:</span></span><br><span class="line">    <span class="keyword">with</span> open(<span class="string">f'async_data/<span class="subst">&#123;quote_plus(filename)&#125;</span>.html'</span>, <span class="string">'wb'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        f.write(data)</span><br></pre></td></tr></table></figure>
+<p>同时增加一个函数，用来同时发起请求并把结果保存到文件：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">fetch_and_save</span><span class="params">(session, url)</span>:</span></span><br><span class="line">    url, data = <span class="keyword">await</span> fetch(session, url)</span><br><span class="line">    save_to_file(url, data * <span class="number">500</span>)  <span class="comment"># 把文件大小扩大 500 倍，使结果更明显</span></span><br><span class="line">    <span class="keyword">return</span> url</span><br></pre></td></tr></table></figure>
+<p>同时更新一下 <code>main()</code> 函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">with</span> aiohttp.ClientSession() <span class="keyword">as</span> session:</span><br><span class="line">        tasks = [fetch_and_save(session, url) <span class="keyword">for</span> url <span class="keyword">in</span> urls]</span><br><span class="line">        <span class="keyword">for</span> task <span class="keyword">in</span> asyncio.as_completed(tasks):</span><br><span class="line">            url = <span class="keyword">await</span> task</span><br><span class="line">            print(<span class="string">f'save: <span class="subst">&#123;url&#125;</span>'</span>)</span><br></pre></td></tr></table></figure>
+<p>上述代码的结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">save: http://www.psbc.com/</span><br><span class="line">save: http://www.cnki.net/</span><br><span class="line">save: http://www.eastmoney.com/</span><br><span class="line">save: http://tuijian.hao123.com/</span><br><span class="line">save: http://caipiao.hao123.com/</span><br><span class="line">save: http://www.ifeng.com</span><br><span class="line">save: http://www.fang.com/</span><br><span class="line">save: http://www.qq.com/</span><br><span class="line">...</span><br><span class="line">save: https://www.bilibili.com/</span><br><span class="line">save: https://www.autohome.com.cn/</span><br><span class="line">save: https://www.booking.com/</span><br><span class="line">save: https://mail.sohu.com/</span><br><span class="line">save: https://weibo.com/</span><br><span class="line">save: http://mail.qq.com/</span><br><span class="line">save: http://mail.10086.cn/</span><br><span class="line">save: http://www.zhihu.com/</span><br><span class="line">10.63579511642456</span><br></pre></td></tr></table></figure>
+<p>可以看到消耗的时间增加到了约 10s。</p>
+<p>有没有什么方法可以将同步的文件系统操作变为异步的呢？答案就是结合使用线程和 <code>asyncio</code>。修改一下 <code>fetch_and_save()</code> 函数，使其在其他线程中执行保存操作：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">fetch_and_save</span><span class="params">(session, url)</span>:</span></span><br><span class="line">    url, data = <span class="keyword">await</span> fetch(session, url)</span><br><span class="line">    loop = asyncio.get_event_loop()</span><br><span class="line">    loop.run_in_executor(<span class="keyword">None</span>, save_to_file, url, data * <span class="number">500</span>)  <span class="comment"># 默认使用 ThreadPoolExecutor</span></span><br><span class="line">    <span class="keyword">return</span> url</span><br></pre></td></tr></table></figure>
+<p>修改后的结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">save: http://www.psbc.com/</span><br><span class="line">save: http://www.12306.cn/</span><br><span class="line">save: http://www.ccb.com/</span><br><span class="line">save: http://www.cnki.net/</span><br><span class="line">save: http://www.sohu.com/</span><br><span class="line">save: http://www.37.com/</span><br><span class="line">save: http://www.icbc.com.cn/icbc/</span><br><span class="line">save: http://mail.sina.com.cn/</span><br><span class="line">save: http://www.ifeng.com</span><br><span class="line">...</span><br><span class="line">save: https://mail.qq.com/</span><br><span class="line">save: http://mail.163.com/</span><br><span class="line">save: https://mail.sohu.com/</span><br><span class="line">save: https://weibo.com/</span><br><span class="line">save: http://mail.qq.com/</span><br><span class="line">save: http://mail.10086.cn/</span><br><span class="line">save: http://www.zhihu.com/</span><br><span class="line">save: https://www.booking.com/</span><br><span class="line">4.817075967788696</span><br></pre></td></tr></table></figure>
+<p>效果很明显，所需的时间缩短到了约 5s。</p>
+<p><strong>NOTE：</strong>需要注意的是，大多数操作系统上并未提供文件系统的异步 I / O 操作（Linux kernel 提供了文件系统异步 I / O，不过它需要一个额外的库 <a href="http://lse.sourceforge.net/io/aio.html" target="_blank" rel="noopener">aio</a>），大部分的异步框架都是使用线程处理文件系统 I / O 的。如果需要统一的 API，可以选择 <a href="https://github.com/Tinche/aiofiles/" target="_blank" rel="noopener">aiofiles</a>。</p>
+
+  </div>
+</article>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用-aiohttp-作为-http-客户端"><span class="toc-number">2.</span> <span class="toc-text">使用 aiohttp 作为 HTTP 客户端</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#准备工作"><span class="toc-number">2.1.</span> <span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#同步的请求"><span class="toc-number">2.2.</span> <span class="toc-text">同步的请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基于线程的请求"><span class="toc-number">2.3.</span> <span class="toc-text">基于线程的请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基于-asyncio-的请求"><span class="toc-number">2.4.</span> <span class="toc-text">基于 asyncio 的请求</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#保存请求的结果"><span class="toc-number">2.4.1.</span> <span class="toc-text">保存请求的结果</span></a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://mislink.github.io/posts/691d18bc/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://mislink.github.io/posts/691d18bc/&text=asyncio 不完全指北（六）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://mislink.github.io/posts/691d18bc/&title=asyncio 不完全指北（六）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://mislink.github.io/posts/691d18bc/&is_video=false&description=asyncio 不完全指北（六）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=asyncio 不完全指北（六）&body=Check out this article: https://mislink.github.io/posts/691d18bc/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://mislink.github.io/posts/691d18bc/&title=asyncio 不完全指北（六）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://mislink.github.io/posts/691d18bc/&title=asyncio 不完全指北（六）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://mislink.github.io/posts/691d18bc/&title=asyncio 不完全指北（六）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://mislink.github.io/posts/691d18bc/&title=asyncio 不完全指北（六）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://mislink.github.io/posts/691d18bc/&name=asyncio 不完全指北（六）&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2018 MisLink
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+
+

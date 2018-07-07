@@ -6,18 +6,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="写在前面 这里是系列中的第一篇文章。该系列旨在实现并尽可能用通俗易懂的方式描述《算法新解》中的内容。 什么是最小可用 id？ 很多数据都包含 id 这个概念，通常情况下是非负整数，用来唯一标识一条数据。很多 id 处于使用中的状态，也就是已经绑定到一条数据，而另一些 id 处于未使用的状态，可以分配给新的数据。最小可用 id 就是这些数据中最小的可分配 id。 例如，下面是正在使用中的 i">
-<meta name="keywords" content="弱者为何要战斗？">
+    <meta name="description" content="写在前面 这里是系列中的第一篇文章。该系列旨在实现并尽可能用通俗易懂的方式描述《算法新解》中的内容。 什么是最小可用 id？ 很多数据都包含 id 这个概念，通常情况下是非负整数，用来唯一标识一条数据。很多 id 处于使用中的状态，也就是已经绑定到一条数据，而另一些 id 处于未使用的状态，可以分配给新的数据。最小可用 id 就是这些数据中最小的可分配 id。 例如，下面是正在使用中的 id： 1">
+<meta name="keywords" content="弱者为何要战斗？,算法,算法新解">
 <meta property="og:type" content="article">
 <meta property="og:title" content="最小可用 id">
 <meta property="og:url" content="https://mislink.github.io/posts/24910514/index.html">
 <meta property="og:site_name" content="Opstio">
-<meta property="og:description" content="写在前面 这里是系列中的第一篇文章。该系列旨在实现并尽可能用通俗易懂的方式描述《算法新解》中的内容。 什么是最小可用 id？ 很多数据都包含 id 这个概念，通常情况下是非负整数，用来唯一标识一条数据。很多 id 处于使用中的状态，也就是已经绑定到一条数据，而另一些 id 处于未使用的状态，可以分配给新的数据。最小可用 id 就是这些数据中最小的可分配 id。 例如，下面是正在使用中的 i">
+<meta property="og:description" content="写在前面 这里是系列中的第一篇文章。该系列旨在实现并尽可能用通俗易懂的方式描述《算法新解》中的内容。 什么是最小可用 id？ 很多数据都包含 id 这个概念，通常情况下是非负整数，用来唯一标识一条数据。很多 id 处于使用中的状态，也就是已经绑定到一条数据，而另一些 id 处于未使用的状态，可以分配给新的数据。最小可用 id 就是这些数据中最小的可分配 id。 例如，下面是正在使用中的 id： 1">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-03-28T16:05:32.193Z">
+<meta property="og:updated_time" content="2018-07-07T09:48:29.776Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="最小可用 id">
-<meta name="twitter:description" content="写在前面 这里是系列中的第一篇文章。该系列旨在实现并尽可能用通俗易懂的方式描述《算法新解》中的内容。 什么是最小可用 id？ 很多数据都包含 id 这个概念，通常情况下是非负整数，用来唯一标识一条数据。很多 id 处于使用中的状态，也就是已经绑定到一条数据，而另一些 id 处于未使用的状态，可以分配给新的数据。最小可用 id 就是这些数据中最小的可分配 id。 例如，下面是正在使用中的 i">
+<meta name="twitter:description" content="写在前面 这里是系列中的第一篇文章。该系列旨在实现并尽可能用通俗易懂的方式描述《算法新解》中的内容。 什么是最小可用 id？ 很多数据都包含 id 这个概念，通常情况下是非负整数，用来唯一标识一条数据。很多 id 处于使用中的状态，也就是已经绑定到一条数据，而另一些 id 处于未使用的状态，可以分配给新的数据。最小可用 id 就是这些数据中最小的可分配 id。 例如，下面是正在使用中的 id： 1">
     
     
         
@@ -40,14 +40,16 @@
     <title>最小可用 id</title>
     <!-- styles -->
     <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
     <!-- rss -->
     
     
-      <link rel="alternate" href="/atom.xml" title="Opstio" type="application/atom+xml" />
-    
 </head>
 
-<body class="max-width mx-auto px3">
+<body class="max-width mx-auto px3 ltr">
     
       <div id="header-post">
   <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
@@ -61,13 +63,15 @@
          
           <li><a href="/archives/">Writing</a></li>
          
-          <li><a href="/Search/">Search</a></li>
+          <li><a href="/search/">Search</a></li>
         
       </ul>
     </span>
     <br/>
     <span id="actions">
       <ul>
+        
+        <li><a class="icon" href="/posts/b496f296/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
         <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
@@ -125,7 +129,7 @@
       
     <div class="article-tag">
         <i class="fas fa-tag"></i>
-        <a class="tag-link" href="/tags/弱者为何要战斗？/">弱者为何要战斗？</a>
+        <a class="tag-link" href="/tags/弱者为何要战斗？/">弱者为何要战斗？</a>, <a class="tag-link" href="/tags/算法/">算法</a>, <a class="tag-link" href="/tags/算法新解/">算法新解</a>
     </div>
 
 
@@ -144,7 +148,7 @@
 <h2 id="naïve-的解法">naïve 的解法</h2>
 <p>最直观的方法如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">brute_force</span><span class="params">(lst)</span>:</span></span><br><span class="line">    i = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        <span class="keyword">if</span> i <span class="keyword">not</span> <span class="keyword">in</span> lst:</span><br><span class="line">            <span class="keyword">return</span> i</span><br><span class="line">        i += <span class="number">1</span></span><br></pre></td></tr></table></figure>
-<p>以上 python 代码中，<code>in</code> 操作是线性的，这意味着上述代码的时间复杂度为 <span class="math inline">\(O(n^2)\)</span>。对于 10 万个 id 而言，该程序平均需要 11.5s 才能得到答案。</p>
+<p>以上 Python 代码中，<code>in</code> 操作是线性的，这意味着上述代码的时间复杂度为 <span class="math inline">\(O(n^2)\)</span>。对于 10 万个 id 而言，该程序平均需要 11.5s 才能得到答案。</p>
 <h2 id="改进一">改进一</h2>
 <p>改进上述解法的关键是：</p>
 <blockquote>
@@ -177,15 +181,15 @@ minFree(x_1, x_2, ..., x_n) \leqslant n
 </blockquote>
 <p>在很多编程语言中都提供了划分操作：</p>
 <ol type="1">
-<li><p>haskell <code>Data.List.partition</code></p>
+<li><p>Haskell <code>Data.List.partition</code></p>
 <figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Data.List</span><br><span class="line"></span><br><span class="line"><span class="title">bsearch</span> :: [<span class="type">Int</span>] -&gt; <span class="type">Int</span> -&gt; <span class="type">Int</span> -&gt; <span class="type">Int</span></span><br><span class="line"><span class="title">bsearch</span> xs l u | null xs                = l</span><br><span class="line">               | length <span class="keyword">as</span> == m - l + <span class="number">1</span> = bsearch bs (m + <span class="number">1</span>) u</span><br><span class="line">               | otherwise              = bsearch <span class="keyword">as</span> l m</span><br><span class="line"> <span class="keyword">where</span></span><br><span class="line">  m        = (l + u) `div` <span class="number">2</span></span><br><span class="line">  (<span class="keyword">as</span>, bs) = partition (&lt;= m) xs</span><br><span class="line"></span><br><span class="line"><span class="title">minFree</span> :: [<span class="type">Int</span>] -&gt; <span class="type">Int</span></span><br><span class="line"><span class="title">minFree</span> xs = bsearch xs <span class="number">0</span> (length xs - <span class="number">1</span>)</span><br></pre></td></tr></table></figure></li>
-<li><p>python <code>列表推导式</code> 或 <code>filter</code></p>
+<li><p>Python <code>列表推导式</code> 或 <code>filter</code></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">min_free</span><span class="params">(lst, l, u)</span>:</span></span><br><span class="line">    m = (l + u) // <span class="number">2</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> lst:</span><br><span class="line">        <span class="keyword">return</span> l</span><br><span class="line">    left = [i <span class="keyword">for</span> i <span class="keyword">in</span> lst <span class="keyword">if</span> i &lt;= m]</span><br><span class="line">    right = [i <span class="keyword">for</span> i <span class="keyword">in</span> lst <span class="keyword">if</span> i &gt; m]</span><br><span class="line">    <span class="keyword">if</span> len(left) == m - l + <span class="number">1</span>:</span><br><span class="line">        <span class="keyword">return</span> min_free(right, m + <span class="number">1</span>, u)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> min_free(left, l, m)</span><br></pre></td></tr></table></figure></li>
-<li><p>c++ <code>partition</code></p>
+<li><p>C++ <code>partition</code></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">min_free</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;::iterator begin, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;::iterator end, <span class="keyword">int</span> l,</span></span></span><br><span class="line"><span class="function"><span class="params">             <span class="keyword">int</span> u)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> m = (l + u) / <span class="number">2</span>;</span><br><span class="line">  <span class="keyword">if</span> (begin == end) &#123;</span><br><span class="line">    <span class="keyword">return</span> l;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">auto</span> it = partition(begin, end, [m](<span class="keyword">int</span> i) &#123; <span class="keyword">return</span> i &lt;= m; &#125;);</span><br><span class="line">  <span class="keyword">if</span> (it - begin == m - l + <span class="number">1</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> min_free(it, end, m + <span class="number">1</span>, u);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> min_free(begin, it, l, m);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ol>
 <p>上述解法的时间复杂度为 <span class="math inline">\(O(n)\)</span>：第一次需要 <span class="math inline">\(O(n)\)</span> 次比较来划分子序列 <span class="math inline">\(A&#39;\)</span> 和 <span class="math inline">\(A&#39;&#39;\)</span>，第二次需要 <span class="math inline">\(O(n/2)\)</span> 次，第三次需要 <span class="math inline">\(O(n/4)\)</span> 次 … ，总时间复杂度为 <span class="math inline">\(O(n+n/2+n/4+...) = O(2n) = O(n)\)</span>。</p>
-<p>该解法不需要使用额外的栈空间保存递归调用，是因为其中的递归调用都是尾递归，在函数式语言中等同于迭代；c++ 可以通过开启优化选项消除尾递归；特别的，python 不支持尾递归优化。在这种情况下，空间复杂度为递归深度 <span class="math inline">\(O(\lg n)\)</span>。为了避免额外的空间占用，可以手工将递归转换为迭代：</p>
+<p>该解法不需要使用额外的栈空间保存递归调用，是因为其中的递归调用都是尾递归，在函数式语言中等同于迭代；C++ 可以通过开启优化选项消除尾递归；特别的，Python 不支持尾递归优化。在这种情况下，空间复杂度为递归深度 <span class="math inline">\(O(\lg n)\)</span>。为了避免额外的空间占用，可以手工将递归转换为迭代：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">min_free</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;lst)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> l = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">int</span> u = lst.size() - <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">auto</span> begin = lst.begin();</span><br><span class="line">  <span class="keyword">auto</span> end = lst.end();</span><br><span class="line">  <span class="keyword">while</span> (end - begin) &#123;</span><br><span class="line">    <span class="keyword">int</span> m = (l + u) / <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">auto</span> left = partition(begin, end, [m](<span class="keyword">int</span> i) &#123; <span class="keyword">return</span> i &lt;= m; &#125;);</span><br><span class="line">    <span class="keyword">if</span> (left - begin == m - l + <span class="number">1</span>) &#123;</span><br><span class="line">      begin = left;</span><br><span class="line">      l = m + <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      end = left;</span><br><span class="line">      u = m;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> l;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这段程序使用了类似快速排序的分割方法，将数组中的元素分为了两部分：所有 left 之前的元素都小于等于 m，所有 left 和 right 之间的元素都大于 m。</p>
 
@@ -206,7 +210,7 @@ minFree(x_1, x_2, ..., x_n) \leqslant n
          
           <li><a href="/archives/">Writing</a></li>
          
-          <li><a href="/Search/">Search</a></li>
+          <li><a href="/search/">Search</a></li>
         
       </ul>
     </div>
@@ -242,24 +246,19 @@ minFree(x_1, x_2, ..., x_n) \leqslant n
 </div>
 
     
-    <div style="font-size: 11px; color: #666">This work is licensed under a
-  <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" style="color: #fafafa">CC BY-NC-SA 4.0 International License</a>.</div>
-<footer id="footer">
+    <footer id="footer">
   <div class="footer-left">
     Copyright &copy; 2018 MisLink
   </div>
   <div class="footer-right">
     <nav>
       <ul>
-        
+         
           <li><a href="/">Home</a></li>
-        
+         
           <li><a href="/archives/">Writing</a></li>
-        
-          <li><a href="/Search/">Search</a></li>
-        
-        
-          <li><a href="/atom.xml">Rss</a></li>
+         
+          <li><a href="/search/">Search</a></li>
         
       </ul>
     </nav>
@@ -280,12 +279,15 @@ minFree(x_1, x_2, ..., x_n) \leqslant n
 
 <!-- Google Analytics -->
 
+<!-- Baidu Analytics -->
+
 <!-- Disqus Comments -->
+
 
 
     <script type="text/x-mathjax-config">
     MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 
 
