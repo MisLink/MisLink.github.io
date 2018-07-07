@@ -4,6 +4,8 @@ abbrlink: '24910514'
 date: 2018-03-28 21:42:51
 tags:
   - 弱者为何要战斗？
+  - 算法
+  - 算法新解
 mathjax: true
 ---
 
@@ -36,7 +38,7 @@ def brute_force(lst):
         i += 1
 ```
 
-以上 python 代码中，`in` 操作是线性的，这意味着上述代码的时间复杂度为 $O(n^2)$。对于 10 万个 id 而言，该程序平均需要 11.5s 才能得到答案。
+以上 Python 代码中，`in` 操作是线性的，这意味着上述代码的时间复杂度为 $O(n^2)$。对于 10 万个 id 而言，该程序平均需要 11.5s 才能得到答案。
 
 ## 改进一
 
@@ -91,7 +93,7 @@ def min_free(lst):
 
 在很多编程语言中都提供了划分操作：
 
-1. haskell `Data.List.partition`
+1. Haskell `Data.List.partition`
 
    ```haskell
    import Data.List
@@ -108,7 +110,7 @@ def min_free(lst):
    minFree xs = bsearch xs 0 (length xs - 1)
    ```
 
-2. python `列表推导式` 或 `filter`
+2. Python `列表推导式` 或 `filter`
 
    ```python
    def min_free(lst, l, u):
@@ -123,7 +125,7 @@ def min_free(lst):
            return min_free(left, l, m)
    ```
 
-3. c++ `partition`
+3. C++ `partition`
 
    ```c++
    #include <algorithm>
@@ -147,7 +149,7 @@ def min_free(lst):
 
 上述解法的时间复杂度为 $O(n)$：第一次需要 $O(n)$ 次比较来划分子序列  $A'$ 和 $A''$，第二次需要 $O(n/2)$ 次，第三次需要 $O(n/4)$ 次 ... ，总时间复杂度为  $O(n+n/2+n/4+...) = O(2n) = O(n)$。
 
-该解法不需要使用额外的栈空间保存递归调用，是因为其中的递归调用都是尾递归，在函数式语言中等同于迭代；c++ 可以通过开启优化选项消除尾递归；特别的，python 不支持尾递归优化。在这种情况下，空间复杂度为递归深度 $O(\lg n)$。为了避免额外的空间占用，可以手工将递归转换为迭代：
+该解法不需要使用额外的栈空间保存递归调用，是因为其中的递归调用都是尾递归，在函数式语言中等同于迭代；C++ 可以通过开启优化选项消除尾递归；特别的，Python 不支持尾递归优化。在这种情况下，空间复杂度为递归深度 $O(\lg n)$。为了避免额外的空间占用，可以手工将递归转换为迭代：
 
 ```c++
 #include <algorithm>
