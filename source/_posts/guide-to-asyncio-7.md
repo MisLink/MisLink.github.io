@@ -160,7 +160,7 @@ Running 10s test @ http://localhost:5000                    Running 10s test @ h
   23325 requests in 10.01s, 3.96MB read                       61709 requests in 10.03s, 9.65MB read
   Socket errors: connect 0, read 0, write 0, timeout 8
 Requests/sec:    2330.74                                     Requests/sec:    6150.18
-Transfer/sec:    405.20KB                                   Transfer/sec:     0.96MB
+Transfer/sec:    405.20KB                                    Transfer/sec:    0.96MB
 ```
 
 可以看出 flask 在单个请求的耗时上明显胜于 aiohttp，但是标准差巨大，在压力场景下最大耗时长达 1.67s，甚至出现了 8 个超时的连接，而 aiohttp 的请求耗时比较稳定；最重要的区别在于，aiohttp 每秒完成了多达 6150.18 个请求，是 flask 的近 3 倍！flask 中 1% 超过 20.89ms 的请求严重影响了整体的性能。
