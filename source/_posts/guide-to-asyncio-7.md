@@ -7,7 +7,6 @@ tags:
   - asyncio
 ---
 
-# asyncio 不完全指北（七）
 
 ## 使用 aiohttp 作为 Web 服务器
 
