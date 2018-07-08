@@ -90,7 +90,7 @@ pandoc:
 
 feed:
   type: atom
-  path: atom.xml
+  path: rss.xml
   limit: 0
   hub:
   content: true
