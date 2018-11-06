@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta property="og:type" content="website">
 <meta property="og:title" content="search">
-<meta property="og:url" content="https://mislink.github.io/Search/index.html">
+<meta property="og:url" content="https://mislink.github.io/search/index.html">
 <meta property="og:site_name" content="Opstio">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-08-08T14:17:41.249Z">
+<meta property="og:updated_time" content="2018-11-06T14:57:20.468Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="search">
     
@@ -51,7 +51,7 @@
 
 <body class="max-width mx-auto px3 ltr">
     
-    <div class="content index my4">
+    <div class="content index py4">
         
           <header id="header">
   <a href="/">
@@ -74,6 +74,8 @@
        
         <li><a href="/archives/">Writing</a></li>
        
+        <li><a href="/tags/">Tag</a></li>
+       
         <li><a href="/search/">Search</a></li>
       
     </ul>
@@ -83,7 +85,10 @@
         
         <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
   
-    <section id="search">
+
+  <div class="content" itemprop="articleBody">
+      
+        <section id="search">
   <form>
     <input type="text" class="search-input" id="search-input" placeholder="Search...">
   </form>
@@ -91,18 +96,12 @@
   <p class="search-no-result">No results found.</p>
 </section>
 
-  
-  
-
-  <div class="content" itemprop="articleBody">
-    
-
+      
   </div>
 </article>
 
-    </div>
-    
-    <footer id="footer">
+        
+        <footer id="footer">
   <div class="footer-left">
     Copyright &copy; 2018 MisLink
   </div>
@@ -114,6 +113,8 @@
          
           <li><a href="/archives/">Writing</a></li>
          
+          <li><a href="/tags/">Tag</a></li>
+         
           <li><a href="/search/">Search</a></li>
         
       </ul>
@@ -121,6 +122,7 @@
   </div>
 </footer>
 
+    </div>
 </body>
 </html>
 <!-- styles -->
@@ -135,31 +137,37 @@
 
   <script src="/js/search.js"></script>
   <script type="text/javascript">
-    var inputArea = document.querySelector("#search-input");
-    var $resultArea = $("#search-result");
+  $(function() {
 
-    inputArea.onfocus = function() {
+    var $inputArea = $("input#search-input");
+    var $resultArea = document.querySelector("div#search-result");
+
+    $inputArea.focus(function() {
       var search_path = "search.xml";
       if (search_path.length == 0) {
         search_path = "search.xml";
       }
       var path = "/" + search_path;
       searchFunc(path, 'search-input', 'search-result');
-    }
+    });
 
-    inputArea.onkeydown = function(){
-        if(event.keyCode==13){
-            return false
-        }
-    }
+    $inputArea.keydown(function(e) {
+      if (e.which == 13) {
+        e.preventDefault();
+      }
+    });
 
-    $resultArea.bind("DOMNodeRemoved DOMNodeInserted", function(e) {
-        if (!$(e.target).text()) {
-            $(".search-no-result").show(200);
-        } else {
-            $(".search-no-result").hide();
-        }
-    })
+    var observer = new MutationObserver(function(mutationsList, observer) {
+      if (mutationsList[0].addedNodes) {
+        $(".search-no-result").show(200);
+      } else {
+        $(".search-no-result").hide();
+      }
+    });
+
+    observer.observe($resultArea, { childList: true });
+
+  });
   </script>
 
 <!-- Google Analytics -->
