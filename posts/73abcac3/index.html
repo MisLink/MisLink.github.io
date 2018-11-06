@@ -18,7 +18,7 @@
 <meta property="og:image" content="https://files.realpython.com/media/sockets-loopback-interface.44fa30c53c70.jpg">
 <meta property="og:image" content="https://files.realpython.com/media/sockets-ethernet-interface.aac312541af5.jpg">
 <meta property="og:image" content="https://files.realpython.com/media/sockets-app-message.2e131b0751e3.jpg">
-<meta property="og:updated_time" content="2018-08-26T12:59:19.035Z">
+<meta property="og:updated_time" content="2018-11-06T14:11:56.638Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Python 中的 Socket 编程">
 <meta name="twitter:description" content="本文翻译自 Socket Programming in Python。 自豪的采用搜狗翻译。 写在前面 Socket 和 socket API 用于通过网络发送消息。它们提供了一种形式的进程间通信（IPC）。网络可以是连接到计算机的逻辑本地网络，也可以是物理连接到外部网络的网络，它与其他网络有自己的连接。一个明显的例子是互联网，你可以通过你的 ISP 连接到它。 这个教程有三个不同的使用 Pyth">
@@ -154,8 +154,8 @@
 <p>这个教程有三个不同的使用 Python 构建 socket 服务器和客户端的阶段：</p>
 <ol type="1">
 <li>我们将从简单的 socket 服务器和客户端开始教程。</li>
-<li>一旦你看到了 API 以及它这个初始示例中的工作方式，我们将会看到一个同时处理多个连接的改进版本。</li>
-<li>最后，我们将继续构建一个示例服务器和客户端，其功能类似于成熟的 socket 应用，并有自己的自定义 header 和 content。</li>
+<li>一旦你看到了 API 以及它在这个初始示例中的工作方式，我们将会看到一个同时处理多个连接的改进版本。</li>
+<li>最后，我们将继续构建一个示例服务器和客户端，其功能类似于成熟的 socket 应用，并有自己的自定义头部和内容。</li>
 </ol>
 <p>在本教程结束时，您将了解如何使用 Python <a href="https://docs.python.org/3/library/socket.html" target="_blank" rel="noopener">socket 模块</a>中的主要功能和方法编写自己的客户端 - 服务器应用程序。这包括向您展示如何使用自定义类在端点之间发送消息和数据，您可以在这些消息和数据的基础上构建这些它们并将其用于自己的应用程序。</p>
 <p>本教程中的示例使用 Python 3.6。你可以在 GitHub 上找到<a href="https://github.com/realpython/materials/tree/master/python-sockets-tutorial" target="_blank" rel="noopener">源代码</a>。</p>
@@ -164,9 +164,9 @@
 <p>我们开始吧！</p>
 <h2 id="背景">背景</h2>
 <p>Socket 有着悠久的历史。它们的使用起源于 1971 年的 <a href="https://en.wikipedia.org/wiki/Network_socket#History" target="_blank" rel="noopener">ARPANET</a>，后来成为 1983 年发布的伯克利软件套装（BSD）操作系统中的 API，称为<a href="https://en.wikipedia.org/wiki/Berkeley_sockets" target="_blank" rel="noopener">伯克利 socket</a>。</p>
-<p>当互联网在上世纪 90 年代随着万维网而起飞时，网络编程也是如此。Web 服务器和浏览器并不是唯一利用新连接的网络和使用 socket 的应用。各种类型和大小的客户机 - 服务器应用程序得到广泛使用。各种类型和规模的客户机 - 服务器应用程序得到广泛使用。</p>
+<p>当互联网在上世纪 90 年代随着万维网而起飞时，网络编程也是如此。Web 服务器和浏览器并不是唯一利用新连接的网络和使用 socket 的应用。各种类型和大小的客户机 - 服务器应用程序得到广泛使用。</p>
 <p>今天，尽管 socket API 使用的底层协议已经发展了多年，我们已经看到了新的协议，但是低级 API 仍然保持不变。</p>
-<p>Socket 应用程序最常见的类型是客户端 - 服务器应用程序，其中一方充当服务器并等待来自客户端的连接。这是我将在本教程中介绍的应用程序类型。更具体地说，我们将研究<a href="https://en.wikipedia.org/wiki/Berkeley_sockets" target="_blank" rel="noopener">互联网 socket</a> 的 socket API，有时称为伯克利或 BSD socket。还有 Unix 域 socket，只能用于同一台主机上的进程之间的通信。</p>
+<p>最常见的 socket 应用程序是客户端 - 服务器应用程序，其中一方充当服务器并等待来自客户端的连接。这是我将在本教程中介绍的应用程序类型。更具体地说，我们将研究<a href="https://en.wikipedia.org/wiki/Berkeley_sockets" target="_blank" rel="noopener">互联网 socket</a> 的 socket API，有时称为伯克利或 BSD socket。还有 Unix 域 socket，只能用于同一台主机上的进程之间的通信。</p>
 <h2 id="socket-api-概述">Socket API 概述</h2>
 <p>Python 的 <a href="https://docs.python.org/3/library/socket.html" target="_blank" rel="noopener">socket 模块</a>提供了<a href="https://en.wikipedia.org/wiki/Berkeley_sockets" target="_blank" rel="noopener">伯克利 socket API</a> 的接口。这是我们将在本教程中使用和讨论的模块。</p>
 <p>本模块中的主要 socket API 函数和方法是：</p>
@@ -192,19 +192,19 @@
 </ul>
 <p>相反，使用 <code>socket.SOCK_DGRAM</code> 创建的<a href="https://en.wikipedia.org/wiki/User_Datagram_Protocol" target="_blank" rel="noopener">用户数据报协议（UDP）</a>是不可靠的，而且接收方读取的数据可能与发送方的写入顺序不一致。</p>
 <p>为什么这很重要？网络是一个尽力而为的交付系统。不能保证你的数据会到达目的地，也不能保证你会收到发送给你的信息。</p>
-<p>网络设备（例如路由器和交换机）有有限的可用带宽和自身固有的系统限制。他们有 CPU、内存、总线和接口包缓冲区，就像我们的客户端和服务器一样。TCP 使您不必担心<a href="https://en.wikipedia.org/wiki/Packet_loss" target="_blank" rel="noopener">数据包丢失</a>、数据无序到达，以及在网络上通信时经常发生的许多其他事情。</p>
+<p>网络设备（例如路由器和交换机）有有限的可用带宽和自身固有的系统限制。他们有 CPU、内存、总线和接口包缓冲区，就像我们的客户端和服务器一样。TCP 使您不必担心<a href="https://en.wikipedia.org/wiki/Packet_loss" target="_blank" rel="noopener">丢包</a>、数据无序到达，以及在网络上通信时经常发生的许多其他事情。</p>
 <p>在下图中，让我们看看 TCP 的 socket API 调用和数据流的顺序：</p>
 <p><img src="https://files.realpython.com/media/sockets-tcp-flow.1da426797e37.jpg"></p>
 <p>左侧表示服务器。右边是客户端。</p>
-<p>从左上角开始，注意服务器调用 API 来设置“监听” socket：</p>
+<p>从左上角开始，注意服务器调用 API 来设置“监听者” socket：</p>
 <ul>
 <li><code>socket()</code></li>
 <li><code>bind()</code></li>
 <li><code>listen()</code></li>
 <li><code>accept()</code></li>
 </ul>
-<p>监听 socket 就像它听上去的那样，它监听来自客户端的连接。当客户端连接时，服务器调用 <code>accept()</code> 来接受或完成连接。</p>
-<p>客户端调用 <code>connect()</code> 建立与服务器的连接，并启动三次握手。握手步骤很重要，因为它确保网络中连接的每一侧都可以到达，换句话说，客户端可以到达服务器，反之亦然。可能只有一个主机，客户端或服务器可以到达另一个主机。</p>
+<p>监听者 socket 就像它听上去的那样，它监听来自客户端的连接。当客户端连接时，服务器调用 <code>accept()</code> 来接受或完成连接。</p>
+<p>客户端调用 <code>connect()</code> 建立与服务器的连接，并启动三次握手。握手步骤很重要，因为它确保网络中连接的每一侧都可以到达，换句话说，客户端可以到达服务器，反之亦然。可能只有一个主机、客户端或服务器可以到达另一个主机。</p>
 <p>中间是往返部分，客户端和服务器之间调用 <code>send()</code> 和 <code>recv()</code> 交换数据。</p>
 <p>在底部，客户端和服务器使用 <code>close()</code> 关闭各自的 socket。</p>
 <h2 id="echo-客户端和服务器">Echo 客户端和服务器</h2>
@@ -213,7 +213,7 @@
 <p>这里是 Echo 服务器的实现，<code>echo-server.py</code>：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">HOST = <span class="string">"127.0.0.1"</span>  <span class="comment"># 标准回环接口地址（localhost）</span></span><br><span class="line">PORT = <span class="number">65432</span>  <span class="comment"># 要监听的端口（非特权端口 &gt; 1023）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> socket.socket(socket.AF_INET, socket.SOCK_STREAM) <span class="keyword">as</span> s:</span><br><span class="line">    s.bind((HOST, PORT))</span><br><span class="line">    s.listen()</span><br><span class="line">    conn, addr = s.accept()</span><br><span class="line">    <span class="keyword">with</span> conn:</span><br><span class="line">        print(<span class="string">"Connected by"</span>, addr)</span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">            data = conn.recv(<span class="number">1024</span>)</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> data:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            conn.sendall(data)</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p><strong>注意</strong>：现在不要担心无法理解上面的一切。在这几行代码中有很多事情在发生。这只是一个起点，所以你可以看到一个基本的服务器在运行。</p>
+<p><strong>注意</strong>：现在不要担心无法理解上面的一切。在这几行代码中有很多事情在发生。这只是一个起点，你可以看到一个基本的服务器在运行。</p>
 <p>本教程末尾有一个参考部分，包含更多信息和指向其他资源的链接。我将在整个教程中链接到这些资源和其他资源。</p>
 </blockquote>
 <p>让我们浏览一下每个 API 调用，看看发生了什么。</p>
@@ -227,19 +227,19 @@
 <p><code>port</code> 应为 <code>1 - 65535</code> 之间的整数（保留 <code>0</code>）。这是接受客户端连接的 <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol#TCP_ports" target="_blank" rel="noopener">TCP 端口号</a>。如果端口 <code>&lt; 1024</code>，某些系统可能需要超级用户权限。</p>
 <p>以下是关于在 <code>bind()</code> 中使用主机名的说明：</p>
 <blockquote>
-<p>“如果在 IPv4 / v6 socket 地址的主机部分使用主机名，程序可能会显示不确定性行为，因为 Python 使用从 DNS 解析返回的第一个地址。Socket 地址将以不同方式解析为实际的 IPv4 / v6 地址，具体取决于 DNS 解析和 / 或主机配置的结果。对于确定性行为，在主机部分使用数字地址。”（<a href="https://docs.python.org/3/library/socket.html" target="_blank" rel="noopener">来源</a>）</p>
+<p>“如果在 IPv4/v6 socket 地址的主机部分使用主机名，程序可能会显示不确定性行为，因为 Python 使用从 DNS 解析返回的第一个地址。Socket 地址将以不同方式解析为实际的 IPv4/v6 地址，具体取决于 DNS 解析和/或主机配置的结果。对于确定性行为，在主机部分使用数字地址。”（<a href="https://docs.python.org/3/library/socket.html" target="_blank" rel="noopener">来源</a>）</p>
 </blockquote>
-<p>稍后我将在使用主机名时讨论这一点，但在这里值得一提。现在，只要了解使用主机名时，您可能会看到不同的结果，这取决于名称解析过程返回的结果。</p>
+<p>稍后我将在使用主机名这一节讨论这一点，但在这里值得一提。现在，只要了解使用主机名时，您可能会看到不同的结果，这取决于名称解析过程返回的结果。</p>
 <p>它可能是任何东西。第一次运行应用程序时，它可能是地址 <code>10.1.2.3</code>。下次是不同的地址，<code>192.168.0.1</code>。第三次，可能是 <code>172.16.7.8</code>，依此类推。</p>
-<p>继续服务器示例，<code>listen()</code> 使服务器能够使用 <code>accept()</code> 接受连接。它使它成为一个“监听” socket：</p>
+<p>继续服务器示例，<code>listen()</code> 使服务器能够使用 <code>accept()</code> 接受连接。它使它成为一个“监听者” socket：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">s.listen()</span><br><span class="line">conn, addr = s.accept()</span><br></pre></td></tr></table></figure>
 <p><code>listen()</code> 有一个 <code>backlog</code> 参数。它指定系统在拒绝新连接之前允许的未接受连接的数量。从 Python 3.5 开始，它是可选的。如果未指定，则选择默认 <code>backlog</code> 值。</p>
 <p>如果您的服务器同时收到大量连接请求，增加 <code>backlog</code> 值可能有助于设置挂起连接的队列最大长度。最大值取决于系统。例如，在 Linux 上，请参见 <a href="https://serverfault.com/questions/518862/will-increasing-net-core-somaxconn-make-a-difference/519152" target="_blank" rel="noopener"><code>/proc/sys/net/core/somaxconn</code></a>。</p>
-<p><code>accept()</code> 阻塞并等待传入连接。当客户端连接时，它返回一个表示连接的新 socket 对象和一个保存客户端地址的元组。对于 IPv4 连接元组包含 <code>(host, port)</code>，对于 IPv6 则是 <code>(host, port, flowinfo, scopeid)</code>。有关元组值的详细信息，请参见参考部分中的 socket 地址族。</p>
-<p>必须了解的一件事是，我们现在有了来自 <code>accept()</code> 的新 socket 对象。这一点很重要，因为它是你用来与客户沟通的 socket。它不同于服务器用来接受新连接的监听 socket：</p>
+<p><code>accept()</code> 阻塞并等待有连接进入。当客户端连接时，它返回一个表示连接的新 socket 对象和一个保存客户端地址的元组。对于 IPv4 连接元组包含 <code>(host, port)</code>，对于 IPv6 则是 <code>(host, port, flowinfo, scopeid)</code>。有关元组值的详细信息，请参见参考部分中的 socket 地址族。</p>
+<p>必须了解的一件事是，我们现在有了来自 <code>accept()</code> 的新 socket 对象。这一点很重要，因为它是你用来与客户沟通的 socket。它不同于服务器用来接受新连接的监听者 socket：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">conn, addr = s.accept()</span><br><span class="line"><span class="keyword">with</span> conn:</span><br><span class="line">    print(<span class="string">'Connected by'</span>, addr)</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        data = conn.recv(<span class="number">1024</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> data:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        conn.sendall(data)</span><br></pre></td></tr></table></figure>
-<p>从 <code>accept()</code> 获得客户端 socket 对象 <code>conn</code> 后，使用无限 <code>while</code> 循环来循环对 <code>conn.recv()</code> 的阻塞调用。这将读取客户端发送的任何数据，并使用 <code>conn.sendall()</code> 回复。</p>
-<p>如果 <code>conn.recv()</code> 返回空字节对象 <code>b''</code>，则客户端关闭连接并终止循环。<code>with</code> 语句与 <code>conn</code> 一起使用，自动关闭块末尾的 socket。</p>
+<p>从 <code>accept()</code> 获得客户端 socket 对象 <code>conn</code> 后，使用无限 <code>while</code> 循环来检查对 <code>conn.recv()</code> 的阻塞调用。这将读取客户端发送的任何数据，并使用 <code>conn.sendall()</code> 回复。</p>
+<p>如果 <code>conn.recv()</code> 返回空<a href="https://docs.python.org/3/library/stdtypes.html#bytes-objects" target="_blank" rel="noopener">字节</a>对象 <code>b''</code>，name 表示客户端关闭连接并终止循环。<code>with</code> 语句与 <code>conn</code> 一起使用，自动关闭块末尾的 socket。</p>
 <h3 id="echo-客户端">Echo 客户端</h3>
 <p>现在让我们来看看客户端，<code>echo-client.py</code>：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">HOST = <span class="string">"127.0.0.1"</span>  <span class="comment"># 服务器的主机名或 IP 地址</span></span><br><span class="line">PORT = <span class="number">65432</span>  <span class="comment"># 服务器使用的端口</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> socket.socket(socket.AF_INET, socket.SOCK_STREAM) <span class="keyword">as</span> s:</span><br><span class="line">    s.connect((HOST, PORT))</span><br><span class="line">    s.sendall(<span class="string">b"Hello, world"</span>)</span><br><span class="line">    data = s.recv(<span class="number">1024</span>)</span><br><span class="line"></span><br><span class="line">print(<span class="string">"Received"</span>, repr(data))</span><br></pre></td></tr></table></figure>
@@ -269,7 +269,7 @@
 <p>另一种方法也可以看到这些，以及其他有用的信息：使用 <code>lsof</code> （列出打开的文件）。默认情况下，它在 macOS 上可用，如果还没有安装，可以使用您的软件包管理器在 Linux 上安装：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> lsof -i -n</span></span><br><span class="line">COMMAND    PID     USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME</span><br><span class="line">python3.7 4922     &lt;me&gt;    3u  IPv4 0x57cec31dfece6b87      0t0  TCP *:65432 (LISTEN)</span><br></pre></td></tr></table></figure>
 <p>当与 <code>-i</code> 选项一起使用时，<code>lsof</code> 为您提供了 <code>COMMAND</code>、<code>PID</code>（进程 id）和 <code>USER</code>（用户 id）。以上是 Echo 服务器进程。</p>
-<p><code>netstat</code> 和 <code>lsof</code> 有很多可用的选项，并且根据运行它们的操作系统而有所不同。查看 <code>man</code> 或文档以了解两者。他们绝对值得花一点时间去了解和了解。你会从中收益的。在 macOS 和 Linux 上，使用 <code>man netstat</code> 和 <code>man lsof</code>，在 Windows 上，使用 <code>netstat /?</code>。</p>
+<p><code>netstat</code> 和 <code>lsof</code> 有很多可用的选项，并且根据运行它们的操作系统而有所不同。查看 <code>man</code> 或文档以了解两者。他们绝对值得花一点时间去了解，你会从中收益的。在 macOS 和 Linux 上，使用 <code>man netstat</code> 和 <code>man lsof</code>，在 Windows 上，使用 <code>netstat /?</code>。</p>
 <p>当尝试连接到没有监听 socket 的端口时，你会看到一个常见的错误：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python ./<span class="built_in">echo</span>-client.py</span></span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File "./echo-client.py", line 9, in &lt;module&gt;</span><br><span class="line">    s.connect((HOST, PORT))</span><br><span class="line">ConnectionRefusedError: [Errno 61] Connection refused</span><br></pre></td></tr></table></figure>
 <p>指定的端口号错误或服务器未运行。或者可能有防火墙阻止连接，这很容易忘记。您还可能会看到错误 <code>Connection timed out</code>。添加允许客户端连接到 TCP 端口的防火墙规则！</p>
@@ -277,7 +277,7 @@
 <h2 id="通信分析">通信分析</h2>
 <p>让我们仔细看看客户端和服务器是如何相互通信的：</p>
 <p><img src="https://files.realpython.com/media/sockets-loopback-interface.44fa30c53c70.jpg"></p>
-<p>使用<a href="https://en.wikipedia.org/wiki/Localhost" target="_blank" rel="noopener">回环</a>接口（IPv4 地址 <code>127.0.0.1</code> 或 IPv6 地址 <code>::1</code>）时，数据永远不会离开主机或接触外部网络。在上图中，回环接口包含在主机内部。这表示回环接口的内部特性，以及传输它的连接和数据是主机本地的。这就是为什么您还会听到回环接口和 IP 地址 <code>127.0.0.1</code> 或 <code>::1</code> 被称为“本地主机（localhost）”。</p>
+<p>使用<a href="https://en.wikipedia.org/wiki/Localhost" target="_blank" rel="noopener">回环</a>接口（IPv4 地址 <code>127.0.0.1</code> 或 IPv6 地址 <code>::1</code>）时，数据永远不会离开主机接触外部网络。在上图中，回环接口包含在主机内部。这表示回环接口的内部特性，以及传输它的连接和数据是主机本地的。这就是为什么您还会听到回环接口和 IP 地址 <code>127.0.0.1</code> 或 <code>::1</code> 被称为“本地主机（localhost）”。</p>
 <p>应用程序使用回环接口与主机上运行的其他进程进行通信，以实现安全性和与外部网络的隔离。因为它是内部的，只能从主机内部访问，所以不会暴露出来。</p>
 <p>如果您有一个使用自己私有数据库的应用服务器，您可以看到这一点。如果它不是其他服务器使用的数据库，它可能被配置为只监听回环接口上的连接。如果是这种情况，网络上的其他主机无法连接到它。</p>
 <p>当您在应用程序中使用 <code>127.0.0.1</code> 或 <code>::1</code> 以外的 IP 地址时，它可能绑定到连接到外部网络的<a href="https://en.wikipedia.org/wiki/Ethernet" target="_blank" rel="noopener">以太网</a>接口。这是通往“本地主机”王国之外的其他主机的门户：</p>
@@ -293,42 +293,42 @@
 </blockquote>
 <p>我们通过使用 <code>sendall()</code> 避免了这样做：</p>
 <blockquote>
-<p>“与 <code>send()</code> 不同，此方法继续从字节发送数据，直到发送完所有数据或出现错误。成功后不会返回任何信息。”（<a href="https://docs.python.org/3/library/socket.html#socket.socket.sendall" target="_blank" rel="noopener">来源</a>）</p>
+<p>“与 <code>send()</code> 不同，此方法继续从字节发送数据，直到发送完所有数据或出现错误。成功后会返回 <code>None</code>。”（<a href="https://docs.python.org/3/library/socket.html#socket.socket.sendall" target="_blank" rel="noopener">来源</a>）</p>
 </blockquote>
 <p>在这一点上，我们有两个问题：</p>
 <ul>
 <li>我们如何同时处理多个连接？</li>
 <li>我们需要调用 <code>send()</code> 和 <code>recv()</code>，直到所有数据被发送或接收。</li>
 </ul>
-<p>我们该怎么办？<a href="https://docs.python.org/3/library/concurrency.html" target="_blank" rel="noopener">并发</a>有许多方法。最近，一种流行的方法是使用<a href="https://docs.python.org/3/library/asyncio.html" target="_blank" rel="noopener">异步 I / O</a>。<code>asyncio</code> 在 Python 3.4 中被引入 。传统的选择是使用<a href="https://docs.python.org/3/library/threading.html" target="_blank" rel="noopener">线程</a>。</p>
+<p>我们该怎么办？<a href="https://docs.python.org/3/library/concurrency.html" target="_blank" rel="noopener">并发</a>有许多方法。最近，一种流行的方法是使用<a href="https://docs.python.org/3/library/asyncio.html" target="_blank" rel="noopener">异步 I/O</a>。<code>asyncio</code> 在 Python 3.4 中被引入 。传统的选择是使用<a href="https://docs.python.org/3/library/threading.html" target="_blank" rel="noopener">线程</a>。</p>
 <p>并发的问题是很难做对。有许多微妙之处需要考虑和防范。只要有其中一个表现出来，你的应用程序可能会突然以不那么微妙的方式失败。</p>
-<p>我这样说并不是为了吓退你学习和使用并发编程。如果您的应用程序需要扩展，如果您想要使用多个处理器或多个核，这是必要的。然而，对于本教程，我们将使用比线程更传统、更容易推理的东西。我们将使用系统调用的鼻祖：<code>select()</code>。</p>
-<p><code>select()</code> 允许您检查多个 socket 上的 I / O 完成情况。因此，您可以调用 <code>select()</code> 来查看哪些 socket 有 I / O 可供读取和 / 或写入。但是这是 Python，所以还有更多。我们将在标准库中使用 <a href="https://docs.python.org/3/library/selectors.html" target="_blank" rel="noopener">selectors</a> 模块，因此不管我们运行的是什么操作系统，都将使用最有效的实现：</p>
+<p>我这样说并不是为了吓退你学习和使用并发编程。如果您的应用程序需要扩展，如果您想要使用多个处理器或多个核，这是必要的。然而，对于本教程，我们将使用比线程更传统、更容易解释的东西。我们将使用系统调用的鼻祖：<code>select()</code>。</p>
+<p><code>select()</code> 允许您检查多个 socket 上的 I/O 完成情况。因此，您可以调用 <code>select()</code> 来查看哪些 socket 有 I/O 可供读取和/或写入。但是这是 Python，所以还有更多。我们使用标准库中的 <a href="https://docs.python.org/3/library/selectors.html" target="_blank" rel="noopener">selectors</a> 模块，因此不管我们运行的是什么操作系统，都将使用最有效的实现：</p>
 <blockquote>
-<p>该模块允许基于 select 模块原语实现高级、高效的 I / O 多路复用。鼓励用户使用这个模块，除非他们想要对所使用的操作系统级原语进行精确控制。（<a href="https://docs.python.org/3/library/selectors.html" target="_blank" rel="noopener">Source</a>）</p>
+<p>该模块允许基于 select 模块原语实现高级、高效的 I/O 多路复用。鼓励用户使用这个模块，除非他们想要对所使用的操作系统级原语进行精确控制。（<a href="https://docs.python.org/3/library/selectors.html" target="_blank" rel="noopener">来源</a>）</p>
 </blockquote>
 <p>尽管通过使用 <code>select()</code>，我们无法并行运行，但根据您的工作负载，这种方法可能仍然很快。这取决于应用程序在服务请求时需要做什么以及需要支持的客户端数量。</p>
 <p><a href="https://docs.python.org/3/library/asyncio.html" target="_blank" rel="noopener">asyncio</a> 使用单线程协同多任务和事件循环来管理任务。使用 <code>select()</code>，我们将编写我们自己的事件循环版本，尽管更加简单和同步。当使用多线程时，即使具有并发性，我们目前也必须将 <a href="https://realpython.com/python-gil/" target="_blank" rel="noopener">GIL</a> 与 <a href="https://wiki.python.org/moin/GlobalInterpreterLock" target="_blank" rel="noopener">CPython 和 PyPy</a> 一起使用。这实际上限制了我们可以并行完成的工作量。</p>
-<p>我这么说是为了解释使用 <code>select()</code> 可能是一个非常好的选择。不要觉得必须使用异步、线程或最新的异步库。通常，在网络应用程序中，您的应用程序是 I / O 绑定的：它可能在本地网络、网络另一端的端点、磁盘等上等待。</p>
+<p>我这么说是为了解释使用 <code>select()</code> 可能是一个非常好的选择。不要觉得必须使用异步、线程或最新的异步库。通常，在网络应用程序中，您的应用程序是 I/O 密集的：它可能在本地网络、网络另一端的端点、磁盘等上等待。</p>
 <p>如果你收到了启动 CPU 相关工作的客户端的请求，看看 <a href="https://docs.python.org/3/library/concurrent.futures.html" target="_blank" rel="noopener">concurrent.futures</a> 模块。它包含使用进程池异步执行调用的 <a href="https://docs.python.org/3/library/concurrent.futures.html#processpoolexecutor" target="_blank" rel="noopener">ProcessPoolExecutor</a> 类。</p>
 <p>如果您使用多个进程，操作系统能够调度 Python 代码在多个处理器或内核上并行运行，而无需 GIL。有关想法和灵感，请参见 PyCon 演讲 <a href="https://www.youtube.com/watch?v=0kXaLh8Fz3k" target="_blank" rel="noopener">John Reese - Thinking Outside the GIL with AsyncIO and Multiprocessing - PyCon 2018</a>。</p>
 <p>在下一节中，我们将查看解决这些问题的服务器和客户端的示例。他们使用 <code>select()</code> 同时处理多个连接，并根据需要多次调用 <code>send()</code> 和 <code>recv()</code>。</p>
 <h2 id="多连接客户端和服务器">多连接客户端和服务器</h2>
 <p>在接下来的两节中，我们将使用从 <a href="https://docs.python.org/3/library/selectors.html" target="_blank" rel="noopener">selectors</a> 模块创建的 <code>selector</code> 对象创建一个处理多个连接的服务器和客户端。</p>
 <h3 id="多连接服务器">多连接服务器</h3>
-<p>首先，让我们来看一下多连接服务器，<code>multiconn-server.py</code>。下面是设置监听 socket 的第一部分：</p>
+<p>首先，让我们来看一下多连接服务器，<code>multiconn-server.py</code>。下面是设置监听者 socket 的第一部分：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> selectors</span><br><span class="line"></span><br><span class="line">sel = selectors.DefaultSelector()</span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line">lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">lsock.bind((host, port))</span><br><span class="line">lsock.listen()</span><br><span class="line">print(<span class="string">"listening on"</span>, (host, port))</span><br><span class="line">lsock.setblocking(<span class="keyword">False</span>)</span><br><span class="line">sel.register(lsock, selectors.EVENT_READ, data=<span class="keyword">None</span>)</span><br></pre></td></tr></table></figure>
 <p>这个服务器和 Echo 服务器之间的最大区别是调用 <code>lsock.setblocking(False)</code> 以非阻塞模式配置 socket。对这个 socket 的调用将不再阻塞。当它与 <code>sel.select()</code> 一起使用时，正如您将在下面看到的，我们可以在一个或多个 socket 上等待事件，然后在数据准备好时读写数据。</p>
-<p><code>sel.register()</code> 注册要用 <code>sel.select()</code> 监测的 socket，以获取您感兴趣的事件。对于监听 socket，我们想要读取事件：<code>selectors.EVENT_READ</code>。</p>
+<p><code>sel.register()</code> 注册要用 <code>sel.select()</code> 监控的 socket，以获取您感兴趣的事件。对于监听者 socket，我们想要读取事件：<code>selectors.EVENT_READ</code>。</p>
 <p><code>data</code> 用于存储 socket 中任何你想要的数据。当 <code>select()</code> 返回时，它会返回。我们将使用 <code>data</code> 来跟踪 socket 上发送和接收的内容。</p>
 <p>接下来是事件循环：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> selectors</span><br><span class="line"></span><br><span class="line">sel = selectors.DefaultSelector()</span><br><span class="line"></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">    events = sel.select(timeout=<span class="keyword">None</span>)</span><br><span class="line">    <span class="keyword">for</span> key, mask <span class="keyword">in</span> events:</span><br><span class="line">        <span class="keyword">if</span> key.data <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">            accept_wrapper(key.fileobj)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            service_connection(key, mask)</span><br></pre></td></tr></table></figure>
-<p><a href="https://docs.python.org/3/library/selectors.html#selectors.BaseSelector.select" target="_blank" rel="noopener"><code>sel.select(timeout=None)</code></a> 阻塞直到有 socket 可供 I / O。它返回 <code>(key, mask)</code> 元组列表，每个 socket 一个元组。<code>key</code> 是一个包含 <code>fileobj</code> 属性的 <a href="https://docs.python.org/3/library/selectors.html#selectors.SelectorKey" target="_blank" rel="noopener">SelectorKey</a> 命名元组。<code>key.fileobj</code> 是一个 socket 对象，<code>mask</code> 是准备好的操作的事件掩码。</p>
-<p>如果 <code>key.data</code> 为 <code>None</code>，我们就知道它来自监听 socket，我们需要使用 <code>accept()</code> 接受连接。我们将调用我们自己的 <code>accept()</code> 包装函数来获取新的 socket 对象，并向选择器注册它。我们过一会儿再看。</p>
+<p><a href="https://docs.python.org/3/library/selectors.html#selectors.BaseSelector.select" target="_blank" rel="noopener"><code>sel.select(timeout=None)</code></a> 阻塞直到有 socket 可供 I/O。它返回 <code>(key, mask)</code> 元组列表，每个 socket 一个元组。<code>key</code> 是一个包含 <code>fileobj</code> 属性的 <a href="https://docs.python.org/3/library/selectors.html#selectors.SelectorKey" target="_blank" rel="noopener">SelectorKey</a> 命名元组。<code>key.fileobj</code> 是一个 socket 对象，<code>mask</code> 是准备好的操作的事件掩码。</p>
+<p>如果 <code>key.data</code> 为 <code>None</code>，我们就知道它来自监听者 socket，我们需要使用 <code>accept()</code> 接受连接。我们将调用我们自己的 <code>accept()</code> 包装函数来获取新的 socket 对象，并向选择器注册它。我们过一会儿再看。</p>
 <p>如果 <code>key.data</code> 不为 <code>None</code>，那么我们知道这是一个已经被接受的客户端 socket，我们需要为它提供服务。之后调用 <code>service_connection()</code> 并传递 <code>key</code> 和 <code>mask</code>，其中包含我们在 socket 上操作所需的所有内容。</p>
 <p>让我们看看我们的 <code>accept_wrapper()</code> 函数是做什么的：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">accept_wrapper</span><span class="params">(sock)</span>:</span></span><br><span class="line">    conn, addr = sock.accept()  <span class="comment"># 应该可以读了</span></span><br><span class="line">    print(<span class="string">"accepted connection from"</span>, addr)</span><br><span class="line">    conn.setblocking(<span class="keyword">False</span>)</span><br><span class="line">    data = types.SimpleNamespace(addr=addr, inb=<span class="string">b""</span>, outb=<span class="string">b""</span>)</span><br><span class="line">    events = selectors.EVENT_READ | selectors.EVENT_WRITE</span><br><span class="line">    sel.register(conn, events, data=data)</span><br></pre></td></tr></table></figure>
-<p>因为监听 socket 是注册在 <code>selectors.EVENT_READ</code> 事件上的，所以它应该已经可以读了。我们调用 <code>sock.accept()</code>，然后立即调用 <code>conn.setblocking(False)</code>，将 socket 置于非阻塞模式。</p>
+<p>因为监听者 socket 是注册在 <code>selectors.EVENT_READ</code> 事件上的，所以它应该已经可以读了。我们调用 <code>sock.accept()</code>，然后立即调用 <code>conn.setblocking(False)</code>，将 socket 置于非阻塞模式。</p>
 <p>记住，这是这个版本的服务器的主要目标，因为我们不想阻塞它。如果它阻塞了，那么整个服务器就会停止运行，直到它返回。这意味着其他 socket 都在等待。这是可怕的“挂起”状态，你不想让你的服务器进入这种状态。</p>
 <p>接下来，我们使用类 <code>types.SimpleNamespace</code> 创建一个对象来保存我们希望与 socket 一起包含的数据。因为我们想知道客户端连接何时可以读写，所以这两个事件是通过以下方式设置的：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">events = selectors.EVENT_READ | selectors.EVENT_WRITE</span><br></pre></td></tr></table></figure>
@@ -370,9 +370,9 @@
 <blockquote>
 <p>“所有错误都会引发异常。可以引发无效参数类型和内存不足的正常异常；从 Python 3.3 开始，与 socket 或地址语义相关的错误会引发 <code>OSError</code> 或其子类之一。”（<a href="https://docs.python.org/3/library/socket.html" target="_blank" rel="noopener">来源</a>）</p>
 </blockquote>
-<p>我们需要捕获 <code>OSError</code>。关于错误，我没有提到的另一件事是超时。你会在文档的许多地方看到对它们的讨论。超时会发生，是“正常”错误。主机和路由器重新启动，交换机端口变坏，电缆变坏，电缆被拔掉，这是你能想到的。您应该为这些错误和其他错误做好准备，并在代码中处理它们。</p>
+<p>我们需要捕获 <code>OSError</code>。关于错误，我没有提到的另一件事是超时。你会在文档的许多地方看到对它们的讨论。超时会发生，是“正常”错误。主机和路由器重新启动，交换机端口损坏，电缆损坏，电缆被拔掉，这是你能想到的。您应该为这些错误和其他错误做好准备，并在代码中处理它们。</p>
 <p>“房间里的大象”呢？正如 socket 类型 <code>socket.SOCK_STREAM</code> 所暗示的，当使用 TCP 时，您正在从连续的字节流中读取。这就像是从磁盘上的文件中读取，但实际上是从网络中读取字节。</p>
-<p>然而，与读取文件不同，没有 <code>f.seek()</code>。换句话说，如果有 socket 指针的话，你不能重新定位它，也不能随意地在数据周围移动。</p>
+<p>然而，与读取文件不同，没有 <a href="https://docs.python.org/3/tutorial/inputoutput.html#methods-of-file-objects" target="_blank" rel="noopener"><code>f.seek()</code></a>。换句话说，如果有 socket 指针的话，你不能重新定位它，也不能随意地在数据周围移动。</p>
 <p>当字节到达 socket 时，会涉及网络缓冲区。一旦你读过它们，它们就需要被保存在某个地方。再次调用 <code>recv()</code> 读取 socket 中可用的下一个字节流。</p>
 <p>这意味着您将分块读取 socket。您需要调用 <code>recv()</code> 并将数据保存在缓冲区中，直到您读取了足够多的字节以获得对您的应用程序有意义的完整消息为止。</p>
 <p>由你来定义和跟踪消息边界的位置。就 TCP socket 而言，它只是向网络发送原始字节和从网络接收原始字节。它不知道这些原始字节意味着什么。</p>
@@ -391,8 +391,8 @@
 <p>如果我在<a href="https://www.qemu.org/" target="_blank" rel="noopener">模拟</a>大端 CPU（PowerPC）的虚拟机中运行此功能，则会发生以下情况：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python -c <span class="string">'import sys; print(repr(sys.byteorder))'</span></span></span><br><span class="line">'big'</span><br></pre></td></tr></table></figure>
 <p>在这个示例应用程序中，我们的应用层协议将头部定义为 UTF-8 编码的 Unicode 文本。对于消息中的实际内容，即消息载荷，如果需要，您仍然需要手动交换字节顺序。</p>
-<p>这将取决于您的应用程序，以及是否需要处理来自具有不同字符顺序的机器的多字节二进制数据。您可以通过添加额外的头部并使用它们传递参数来帮助客户端或服务器实现二进制支持，类似于 HTTP。</p>
-<p>如果这还不合理，不要担心。在下一节中，您将看到所有这些都是如何工作，并结合在一起的。</p>
+<p>这将取决于您的应用程序，以及是否需要处理来自具有不同字符顺序的机器的多字节二进制数据。您可以通过在头部中添加额外的头部并使用它们传递参数来帮助客户端或服务器实现二进制支持，类似于 HTTP。</p>
+<p>如果还是很难理解，不要担心。在下一节中，您将看到所有这些都是如何工作，并结合在一起的。</p>
 <h3 id="应用协议头部">应用协议头部</h3>
 <p>让我们定义完整的协议头部。协议头部是：</p>
 <ul>
@@ -427,7 +427,7 @@
 </tr>
 </tbody>
 </table>
-<p>这些字段通知接收者消息载荷中的内容。这允许您发送任意数据，同时提供足够的信息，以便接收方能够正确解码和解释内容。由于头部在字典中，通过根据需要插入键/值对来添加额外的头部很容易。</p>
+<p>这些头部通知接收者消息载荷中的内容。这允许您发送任意数据，同时提供足够的信息，以便接收方能够正确解码和解释内容。由于头部在字典中，通过根据需要插入键/值对来添加额外的头部很容易。</p>
 <h3 id="发送应用消息">发送应用消息</h3>
 <p>还有一点问题。我们有一个可变长度的头部，它既漂亮又灵活，但是当用 <code>recv()</code> 读取它时，你怎么知道头部的长度呢？</p>
 <p>当我们之前谈到使用 <code>recv()</code> 和消息边界时，我提到固定长度的头部可能效率低下。这是真的，但是我们将使用一个小的，2 字节的，固定长度的头部作为包含其长度的 JSON 头部的前缀。</p>
@@ -442,9 +442,9 @@
 <p>为了让事情简单，并且仍然演示在真实程序中如何工作，我创建了一个实现基本搜索功能的应用程序协议。客户端发送搜索请求，服务器查找匹配项。如果客户端发送的请求没有被识别为一次搜索，服务器会假设它是二进制请求并返回二进制响应。</p>
 <p>阅读下面的章节，运行示例，并对代码进行实验后，你将看到事情是如何运作的。然后，您可以使用 <code>Message</code> 类作为起点，并修改它以供自己使用。</p>
 <p>我们实际上离“multiconn”客户端和服务器示例并不远。事件循环代码在 <code>app-client.py</code> 和 <code>app-server.py</code> 中保持不变。我所做的是将消息代码移动到一个名为 <code>Message</code> 的类中，并添加了支持读、写和处理头部和内容的方法。这是使用类的一个很好的例子。</p>
-<p>正如我们前面所讨论的，你将在下面看到的，使用 socket 涉及保持状态。通过使用类，我们将所有的状态、数据和代码组合在一个有组织的单元中。启动或接受连接时，将为客户端和服务器中的每个 socket 创建类的实例。</p>
-<p>对于包装器和实用程序方法，客户端和服务器的类基本相同。它们以下划线开始，就像 <code>Message._json_encode()</code> 一样。这些方法简化了类的工作。他们帮助其他方法，让他们保持短小，保持 <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself" target="_blank" rel="noopener">DRY</a> 原则。</p>
-<p>服务器的 <code>Message</code> 类的工作方式与客户端的基本相同，反之亦然。不同之处在于客户端启动连接并发送请求消息，然后处理服务器的响应消息。相反，服务器等待连接，处理客户端的请求消息，然后发送响应消息。</p>
+<p>正如我们前面所讨论的，你将在下面看到，使用 socket 涉及保持状态。通过使用类，我们将所有的状态、数据和代码组合在一个有组织的单元中。启动或接受连接时，将为客户端和服务器中的每个 socket 创建类的实例。</p>
+<p>对于包装器和通用方法，客户端和服务器的类基本相同。它们以下划线开始，就像 <code>Message._json_encode()</code> 一样。这些方法简化了类的工作。他们帮助其他方法，让他们保持短小，保持 <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself" target="_blank" rel="noopener">DRY</a> 原则。</p>
+<p>服务器的 <code>Message</code> 类的工作方式与客户端的基本相同。不同之处在于客户端启动连接并发送请求消息，然后处理服务器的响应消息。相反，服务器等待连接，处理客户端的请求消息，然后发送响应消息。</p>
 <p>看起来是这样的：</p>
 <table>
 <thead>
@@ -514,7 +514,7 @@
 <p>创建 <code>Message</code> 对象后，它与使用 <code>selector.register()</code> 监视事件的 socket 相关联：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">message = libserver.Message(sel, conn, addr)</span><br><span class="line">sel.register(conn, selectors.EVENT_READ, data=message)</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>注意：本节中的一些代码示例来自服务器的主程序和 <code>Message</code> 类，但是本节和讨论同样适用于客户端。当客户端的代码不同时，我会展示和解释。</p>
+<p>注意：本节中的一些代码示例来自服务器的主程序和 <code>Message</code> 类，但是本节和讨论同样适用于客户端。当客户端的代码不同时，我会展示并解释。</p>
 </blockquote>
 <p>当 socket 上的事件就绪时，<code>selector.select()</code> 会返回它们。然后，我们可以使用 <code>key</code> 对象上的数据属性获取对 <code>Message</code> 对象的引用，并调用其中的方法：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">    events = sel.select(timeout=<span class="keyword">None</span>)</span><br><span class="line">    <span class="keyword">for</span> key, mask <span class="keyword">in</span> events:</span><br><span class="line">        <span class="comment"># ...</span></span><br><span class="line">        message = key.data</span><br><span class="line">        message.process_events(mask)</span><br></pre></td></tr></table></figure>
@@ -524,7 +524,7 @@
 <p>这很好：<code>process_events()</code> 很简单。它只能做两件事：调用 <code>read()</code> 和 <code>write()</code>。</p>
 <p>这让我们回到管理状态。经过几次重构，我决定，如果另一个方法依赖于具有特定值的状态变量，那么它们只能从 <code>read()</code> 和 <code>write()</code> 中调用。这使得逻辑尽可能简单，因为事件会进入 socket 进行处理。</p>
 <p>这似乎是显而易见的，但是类的前几次迭代是检查当前状态的一些方法的组合，并根据它们的值调用其他方法来处理 <code>read()</code> 或 <code>write()</code> 之外的数据。最后，这被证明过于复杂，难以管理和维护。</p>
-<p>你绝对应该修改这个类以适应你自己的需要，以便它最适合你，但是我建议您保留状态检查和对依赖于该状态的方法的调用，如果可能的话，保留对<code>read()</code> 和 <code>write()</code> 方法的调用。</p>
+<p>你绝对应该修改这个类以适应你自己的需要，使它最适合你，但是我建议您保留状态检查和对依赖于该状态的方法的调用，如果可能的话，保留对 <code>read()</code> 和 <code>write()</code> 方法的调用。</p>
 <p>让我们看看 <code>read()</code>。这是服务器的版本，但是客户端的版本是一样的。它只是使用不同的方法名，<code>process_response()</code>，而不是 <code>process_request()</code>：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read</span><span class="params">(self)</span>:</span></span><br><span class="line">    self._read()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> self._jsonheader_len <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">        self.process_protoheader()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> self._jsonheader_len <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line">        <span class="keyword">if</span> self.jsonheader <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">            self.process_jsonheader()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> self.jsonheader:</span><br><span class="line">        <span class="keyword">if</span> self.request <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">            self.process_request()</span><br></pre></td></tr></table></figure>
 <p>首先调用 <code>_read()</code> 方法。它调用 <code>socket.recv()</code> 从 socket 读取数据并将其存储在接收缓冲区中。</p>
@@ -575,7 +575,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python ./app-server.py 127.0.0.1 65432</span></span><br><span class="line">listening on ('127.0.0.1', 65432)</span><br></pre></td></tr></table></figure>
 <p>创建 socket 后，使用 <code>socket.SO_REUSEADDR</code> 选项调用 <code>socket.setsockopt()</code>：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 避免 bind() 异常: OSError: [Errno 48] Address already in use</span></span><br><span class="line">lsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
-<p>设置此 socket 选项可避免错误 <code>Address already in use</code>。当启动服务器时，您会看到这一点，并且同一端口上以前使用的 TCP socket 连接具有处于 <a href="http://www.serverframework.com/asynchronousevents/2011/01/time-wait-and-its-design-implications-for-protocols-and-scalable-servers.html" target="_blank" rel="noopener">TIME_WAIT</a> 状态。</p>
+<p>设置此 socket 选项可避免错误 <code>Address already in use</code>。当启动服务器时，您会看到这个，如果在同一端口上存在以前使用的 TCP socket 连接处于 <a href="http://www.serverframework.com/asynchronousevents/2011/01/time-wait-and-its-design-implications-for-protocols-and-scalable-servers.html" target="_blank" rel="noopener">TIME_WAIT</a> 状态。</p>
 <p>例如，如果服务器主动关闭连接，它将保持 TIME_WAIT 状态两分钟或更长时间，具体取决于操作系统。如果您试图在 TIME_WAIT 状态到期之前再次启动服务器，您将会得到一个 <code>OSError</code> 异常 <code>Address already in use</code>。这是一种安全措施，确保网络中任何延迟的数据包不会被传送到错误的应用程序。</p>
 <p>事件循环捕获任何错误，以便服务器能够保持正常运行：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">    events = sel.select(timeout=<span class="keyword">None</span>)</span><br><span class="line">    <span class="keyword">for</span> key, mask <span class="keyword">in</span> events:</span><br><span class="line">        <span class="keyword">if</span> key.data <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">            accept_wrapper(key.fileobj)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            message = key.data</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                message.process_events(mask)</span><br><span class="line">            <span class="keyword">except</span> Exception:</span><br><span class="line">                print(</span><br><span class="line">                    <span class="string">"main: error: exception for"</span>,</span><br><span class="line">                    <span class="string">f"<span class="subst">&#123;message.addr&#125;</span>:\n<span class="subst">&#123;traceback.format_exc()&#125;</span>"</span>,</span><br><span class="line">                )</span><br><span class="line">                message.close()</span><br></pre></td></tr></table></figure>
@@ -614,7 +614,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">start_connection</span><span class="params">(host, port, request)</span>:</span></span><br><span class="line">    addr = (host, port)</span><br><span class="line">    print(<span class="string">"starting connection to"</span>, addr)</span><br><span class="line">    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">    sock.setblocking(<span class="keyword">False</span>)</span><br><span class="line">    sock.connect_ex(addr)</span><br><span class="line">    events = selectors.EVENT_READ | selectors.EVENT_WRITE</span><br><span class="line">    message = libclient.Message(sel, sock, addr, request)</span><br><span class="line">    sel.register(sock, events, data=message)</span><br></pre></td></tr></table></figure>
 <p>使用请求字典为服务器连接以及 <code>Message</code> 对象创建 socket。</p>
 <p>像服务器一样，<code>Message</code> 对象与 <code>sel.register()</code> 调用中的 socket 相关联。但是，对于客户端来说，socket 最初被设置为针对读和写事件进行监视。一旦请求被写完，我们将修改它，只监听读事件。</p>
-<p>这种方法给了我们与服务器相同的优势：不浪费CPU周期。发送请求后，我们对写事件不再感兴趣，因此没有理由醒来处理它们。</p>
+<p>这种方法给了我们与服务器相同的优势：不浪费 CPU 周期。发送请求后，我们对写事件不再感兴趣，因此没有理由醒来处理它们。</p>
 <h3 id="客户端-message-类">客户端 Message 类</h3>
 <p>在“<code>Message</code> 入口点”一节中，我们看了当 socket 事件通过 <code>process_events()</code> 准备就绪时，如何调用 <code>Message</code> 对象来操作。现在让我们看看在 socket 上读取和写入数据以及客户端准备好处理消息之后会发生什么。</p>
 <p>客户端的消息类在 <code>libclient.py</code> 中。您可以在 <a href="https://github.com/realpython/materials/tree/master/python-sockets-tutorial" target="_blank" rel="noopener">GitHub</a> 上找到源代码。</p>
@@ -625,7 +625,7 @@
 <p>请求消息被创建并附加到发送缓冲区，然后由 <code>_write()</code> 看到并发送。状态变量 <code>self._request_queued</code> 已设置，因此不再调用 <code>queue_request()</code>。</p>
 <p>发送请求后，客户端等待服务器的响应。</p>
 <p>客户端读取和处理消息的方法与服务器相同。当从 socket 读取响应数据时，<code>process</code> 头部方法被称为：<code>process_protoheader()</code> 和 <code>process_jsonheader()</code>。</p>
-<p>不同之处在于 <code>process</code> 方法的命名以及它们正在处理一个响应，而不是创建一个响应：`<code>process_response()</code>，<code>_process_response_json_content()</code>，和 <code>_process_response_binary_content()</code>。</p>
+<p>不同之处在于 <code>process</code> 方法的命名以及它们正在处理一个响应，而不是创建一个响应：<code>process_response()</code>，<code>_process_response_json_content()</code>，和 <code>_process_response_binary_content()</code>。</p>
 <p>最后，当然也并非最不重要的是，在对 <code>process_response()</code> 的调用的最后：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">process_response</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="comment"># 处理响应后关闭</span></span><br><span class="line">    self.close()</span><br></pre></td></tr></table></figure>
 <h3 id="message-类总结">Message 类总结</h3>
@@ -656,7 +656,7 @@
 <p>查看 <code>sending</code> 行以查看写入客户端 socket 的字节。这是服务器的响应消息。</p>
 <p>如果 <code>action</code> 参数不是 <code>search</code>，您也可以测试向服务器发送二进制请求：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python ./app-client.py 10.0.1.1 65432 binary 😃</span></span><br><span class="line">starting connection to ('10.0.1.1', 65432)</span><br><span class="line">sending b'\x00|&#123;"byteorder": "big", "content-type": "binary/custom-client-binary-type", "content-encoding": "binary", "content-length": 10&#125;binary\xf0\x9f\x98\x83' to ('10.0.1.1', 65432)</span><br><span class="line">received binary/custom-server-binary-type response from ('10.0.1.1', 65432)</span><br><span class="line">got response: b'First 10 bytes of request: binary\xf0\x9f\x98\x83'</span><br><span class="line">closing connection to ('10.0.1.1', 65432)</span><br></pre></td></tr></table></figure>
-<p>由于请求的 <code>content-type</code> 不是 <code>text/json</code>，服务器将其视为自定义二进制类型，不执行 JSON 解码。它只是打印 <code>content-type</code>，并将前10个字节返回给客户端：</p>
+<p>由于请求的 <code>content-type</code> 不是 <code>text/json</code>，服务器将其视为自定义二进制类型，不执行 JSON 解码。它只是打印 <code>content-type</code>，并将前 10 个字节返回给客户端：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python ./app-server.py <span class="string">''</span> 65432</span></span><br><span class="line">listening on ('', 65432)</span><br><span class="line">accepted connection from ('10.0.2.2', 55320)</span><br><span class="line">received binary/custom-client-binary-type request from ('10.0.2.2', 55320)</span><br><span class="line">sending b'\x00\x7f&#123;"byteorder": "little", "content-type": "binary/custom-server-binary-type", "content-encoding": "binary", "content-length": 37&#125;First 10 bytes of request: binary\xf0\x9f\x98\x83' to ('10.0.2.2', 55320)</span><br><span class="line">closing connection to ('10.0.2.2', 55320)</span><br></pre></td></tr></table></figure>
 <h2 id="问题处理">问题处理</h2>
 <p>不可避免的是，有些东西不起作用，你会想知道该怎么办。别担心，这发生在我们所有人身上。希望在本教程、调试器和最喜欢的搜索引擎的帮助下，您能够再次使用源代码部分。</p>
@@ -742,7 +742,7 @@
 <p>请注意 <code>Send-Q: 269868</code>。</p>
 <p>客户端确实试图写入字节，但是服务器没有读取它们。这导致服务器的网络缓冲队列在接收端填满，客户端的网络缓冲队列在发送端填满。</p>
 <h3 id="windows">Windows</h3>
-<p>如果你使用Windows，有一套实用工具，如果你还没有，你绝对应该去看看：<a href="https://docs.microsoft.com/en-us/sysinternals/" target="_blank" rel="noopener">Windows Sysinternals</a>。</p>
+<p>如果你使用 Windows，有一套实用工具，如果你还没有，你绝对应该去看看：<a href="https://docs.microsoft.com/en-us/sysinternals/" target="_blank" rel="noopener">Windows Sysinternals</a>。</p>
 <p>其中之一是 TCPView.exe。TCPView 是 Windows 的图形版 netstat。除了地址、端口号和 socket 状态之外，它还将显示发送和接收的数据包和字节数的运行总数。像 Unix 实用程序 lsof 一样，您也可以获得进程名称和 ID。检查菜单中的其他显示选项。</p>
 <h3 id="wireshark">Wireshark</h3>
 <p>有时你需要看看线路上发生了什么。忘记应用程序日志的内容，或者从库调用返回的值。您希望看到网络上实际发送或接收的内容。就像调试器一样，当你需要看到它时，没有任何替代品。</p>
@@ -764,9 +764,9 @@
 <p>使用 socket 时可能会遇到以下常见错误：</p>
 <table>
 <colgroup>
-<col style="width: 24%">
-<col style="width: 14%">
-<col style="width: 61%">
+<col style="width: 11%">
+<col style="width: 6%">
+<col style="width: 81%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -807,10 +807,10 @@
 <p><code>socket.AF_INET</code> 和 <code>socket.AF_INET6</code> 表示用于 <code>socket.socket()</code> 的第一个参数的地址和协议族。 使用地址的 API 期望它采用某种格式，具体取决于 socket 是使用 <code>socket.AF_INET</code> 还是 <code>socket.AF_INET6</code> 创建的。</p>
 <table>
 <colgroup>
-<col style="width: 14%">
-<col style="width: 3%">
-<col style="width: 28%">
-<col style="width: 52%">
+<col style="width: 6%">
+<col style="width: 1%">
+<col style="width: 12%">
+<col style="width: 79%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -837,7 +837,7 @@
 </table>
 <p>注意 Python socket 模块文档中关于地址元组的主机值的摘录：</p>
 <blockquote>
-<p>对于IPv4地址，接受两种特殊形式而不是主机地址：空字符串代表 <code>INADDR_ANY</code>，字符串 <code>'&lt;broadcast&gt;'</code> 代表 <code>INADDR_BROADCAST</code>。这种行为与 IPv6 不兼容，因此，如果您打算用 Python 程序支持 IPv6，您可能希望避免这些行为。（<a href="https://docs.python.org/3/library/socket.html" target="_blank" rel="noopener">来源</a>）</p>
+<p>对于 IPv4 地址，接受两种特殊形式而不是主机地址：空字符串代表 <code>INADDR_ANY</code>，字符串 <code>'&lt;broadcast&gt;'</code> 代表 <code>INADDR_BROADCAST</code>。这种行为与 IPv6 不兼容，因此，如果您打算用 Python 程序支持 IPv6，您可能希望避免这些行为。（<a href="https://docs.python.org/3/library/socket.html" target="_blank" rel="noopener">来源</a>）</p>
 </blockquote>
 <p>有关详细信息，请参阅 Python 的<a href="https://docs.python.org/3/library/socket.html#socket-families" target="_blank" rel="noopener">socket 系列</a>文档。</p>
 <p>我在本教程中使用了 IPv4 socket，但是如果您的网络支持，尽可能尝试测试和使用 IPv6。支持这一点的一个简单方法是使用函数 <a href="https://docs.python.org/3/library/socket.html#socket.getaddrinfo" target="_blank" rel="noopener"><code>socket.getaddrinfo()</code></a>。它将主机和端口参数转换成包含创建连接到该服务的 socket 所需的所有参数的 5 元组序列。除了 IPv4 之外，<code>socket.getaddrinfo()</code> 将理解和解释传入的 IPv6 地址并解析为 IPv6 地址的主机名。</p>
@@ -852,7 +852,7 @@
 </blockquote>
 <p>名称“localhost”的标准约定是将其解析为 <code>127.0.0.1</code> 或 <code>::1</code>，回环接口。这很可能是你系统上的情况，但也许不是。这取决于您的系统如何配置名称解析。就像所有事情一样，总是有例外，并且不能保证使用“localhost”这个名字会连接到回环接口。</p>
 <p>例如，在 Linux 上，请参见 <code>man nsswitch.conf</code>，名称服务交换机配置文件。在 macOS 和 Linux 上检查的另一个地方是文件 <code>/etc/hosts</code>。在 Windows 上，请参见 <code>C:\Windows\System32\drivers\etc\hosts</code>。hosts 文件包含一个简单文本格式的静态名称到地址映射表。<a href="https://en.wikipedia.org/wiki/Domain_Name_System" target="_blank" rel="noopener">DNS</a> 是另一个难题。</p>
-<p>有趣的是，在这篇文章（2018年6月）中，有一个 RFC 草案<a href="https://tools.ietf.org/html/draft-ietf-dnsop-let-localhost-be-localhost-02" target="_blank" rel="noopener">让“local host”成为 localhost</a>，讨论了使用“localhost”这个名字的约定、假设和安全性。</p>
+<p>有趣的是，在这篇文章（2018 年 6 月）中，有一个 RFC 草案<a href="https://tools.ietf.org/html/draft-ietf-dnsop-let-localhost-be-localhost-02" target="_blank" rel="noopener">让“local host”成为 localhost</a>，讨论了使用“localhost”这个名字的约定、假设和安全性。</p>
 <p>重要的是要理解，当你在应用程序中使用主机名时，返回的地址实际上可以是任何东西。如果你有一个安全敏感的应用程序，不要对名字做出假设。根据您的应用程序和环境，这可能是也可能不是您关心的问题。</p>
 <blockquote>
 <p>注意：安全预防措施和最佳实践仍然适用，即使您的应用程序不是“安全敏感的”。如果您的应用程序访问网络，它应该得到保护和维护。这意味着，至少：</p>
@@ -864,7 +864,7 @@
 </ul>
 </blockquote>
 <p>不管您是否使用主机名，如果您的应用程序需要支持安全连接（加密和身份验证），您可能需要考虑使用 <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security" target="_blank" rel="noopener">TLS</a>。这是它自己独立的主题，超出了本教程的范围。请参阅 Python 的 <a href="https://docs.python.org/3/library/ssl.html" target="_blank" rel="noopener">SSL 模块</a>文档以开始。这与您的 Web 浏览器用来安全连接网站的协议相同。</p>
-<p>考虑到接口、IP地址和名称解析，有许多变量。你该怎么办？以下是一些建议，如果您没有网络应用程序审查流程，可以使用这些建议：</p>
+<p>考虑到接口、IP 地址和名称解析，有许多变量。你该怎么办？以下是一些建议，如果您没有网络应用程序审查流程，可以使用这些建议：</p>
 <table>
 <thead>
 <tr class="header">
@@ -877,17 +877,17 @@
 <tr class="odd">
 <td>Server</td>
 <td>回环接口</td>
-<td>使用IP地址，例如 <code>127.0.0.1</code> 或者 <code>::1</code></td>
+<td>使用 IP 地址，例如 <code>127.0.0.1</code> 或者 <code>::1</code></td>
 </tr>
 <tr class="even">
 <td>Server</td>
 <td>以太网接口</td>
-<td>使用IP地址，例如 <code>10.1.2.3</code>。要支持多个接口，请对所有接口/地址使用空字符串。请参见上面的安全说明。</td>
+<td>使用 IP 地址，例如 <code>10.1.2.3</code>。要支持多个接口，请对所有接口/地址使用空字符串。请参见上面的安全说明。</td>
 </tr>
 <tr class="odd">
 <td>Client</td>
 <td>回环接口</td>
-<td>使用IP地址，例如 <code>127.0.0.1</code> 或者 <code>::1</code></td>
+<td>使用 IP 地址，例如 <code>127.0.0.1</code> 或者 <code>::1</code></td>
 </tr>
 <tr class="even">
 <td>Client</td>
@@ -898,28 +898,28 @@
 </table>
 <p>对于客户端或服务器，如果您需要验证所连接的主机，请考虑使用 TLS。</p>
 <h3 id="阻塞调用">阻塞调用</h3>
-<p>暂时挂起应用程序的 socket 函数或方法是阻塞调用。例如，<code>accept()</code>，<code>connect()</code>，<code>send()</code>，和 <code>recv()</code>。他们不会马上返回。阻塞调用必须等待系统调用（I / O）完成，然后才能返回值。所以你，调用者，会被阻止，直到他们结束或者超时或者其他错误发生。</p>
+<p>暂时挂起应用程序的 socket 函数或方法是阻塞调用。例如，<code>accept()</code>，<code>connect()</code>，<code>send()</code>，和 <code>recv()</code>。他们不会马上返回。阻塞调用必须等待系统调用（I/O）完成，然后才能返回值。所以你，调用者，会被阻止，直到他们结束或者超时或者其他错误发生。</p>
 <p>阻塞 socket 调用可以设置为非阻塞模式，以便立即返回。如果您这样做，至少需要重构或重新设计应用程序，以便在 socket 操作就绪时处理它。</p>
 <p>由于调用立即返回，因此数据可能尚未就绪。 被调用者正在网络上等待，没有时间完成其工作。 如果是这种情况，则当前状态为 <code>errno</code> 值 <code>socket.EWOULDBLOCK</code>。 <a href="https://docs.python.org/3/library/socket.html#socket.socket.setblocking" target="_blank" rel="noopener"><code>setblocking()</code></a> 支持非阻塞模式。</p>
 <p>默认情况下，socket 总是在阻塞模式下创建的。有关这三种模式的描述，请参见关于 <a href="https://docs.python.org/3/library/socket.html#notes-on-socket-timeouts" target="_blank" rel="noopener">socket 超时</a>的文档。</p>
 <h3 id="关闭连接">关闭连接</h3>
-<p>有一点值得注意的是，在TCP中，客户端或服务器完全可以合法地关闭连接的另一端，而另一端则保持打开状态。这被称为“半开”连接。这是否可取取决于应用程序的决定。一般来说，它不是。在这种状态下，关闭连接端的一方不能再发送数据。他们只能接受。</p>
+<p>有一点值得注意的是，在 TCP 中，客户端或服务器完全可以合法地关闭连接的一端，而另一端则保持打开状态。这被称为“半开”连接。这是否可取取决于应用程序的决定。一般来说，它不是。在这种状态下，关闭连接端的一方不能再发送数据。他们只能接受。</p>
 <p>我并不主张您采用这种方法，但是作为示例，HTTP 使用一个名为“Connection”的头部，用于标准化应用程序应该如何关闭或持久化打开的连接。有关详细信息，请参阅 <a href="https://tools.ietf.org/html/rfc7230#section-6.3" target="_blank" rel="noopener">RFC 7230，超文本传输协议（HTTP/1.1）中的 6.3 节：消息语法和路由</a>。</p>
 <p>在设计和编写应用程序及其应用层协议时，最好继续研究如何关闭连接。有时这是显而易见的和简单的，或者是一些需要一些初始原型和测试的东西。这取决于应用程序以及消息循环如何处理其预期的数据。只要确保在完成工作后，socket 总是及时关闭。</p>
 <h3 id="字节序">字节序</h3>
 <p>有关不同 CPU 如何在内存中存储字节序的详细信息，请参见<a href="https://en.wikipedia.org/wiki/Endianness" target="_blank" rel="noopener">维基百科</a>关于字节序的文章。解释单个字节时，这不是问题。但是，当处理作为单个值读取和处理的多个字节时，例如 4 字节整数，如果您与使用不同顺序的机器通信，则需要颠倒字节顺序。</p>
 <p>字节顺序对于表示为多字节序列的文本字符串（如 Unicode）也很重要。除非您总是使用“正确的”，严格的 <a href="https://en.wikipedia.org/wiki/ASCII" target="_blank" rel="noopener">ASCII</a> 并控制客户端和服务器的实现，否则最好使用 Unicode 编码，如 UTF-8 或支持<a href="https://en.wikipedia.org/wiki/Byte_order_mark" target="_blank" rel="noopener">字节顺序标记</a>（BOM）的编码。</p>
 <p>显式定义应用层协议中使用的编码非常重要。为此，您可以要求所有文本都是 UTF-8，或者使用指定编码的“content-encoding”头部。这可以防止应用程序必须检测编码，如果可能，应该避免这种情况。</p>
-<p>当涉及的数据存储在文件或数据库中，并且没有指定编码的元数据时，这就成了问题。当数据被传输到另一个端点时，它必须尝试检测编码。有关讨论，请参见<a href="https://en.wikipedia.org/wiki/Unicode" target="_blank" rel="noopener">维基百科</a>引用的文章 <a href="https://tools.ietf.org/html/rfc3629#page-6" target="_blank" rel="noopener">RFC 3629: UTF-8 的Unicode，ISO 10646的一种转换格式</a>：</p>
+<p>当涉及的数据存储在文件或数据库中，并且没有指定编码的元数据时，这就成了问题。当数据被传输到另一个端点时，它必须尝试检测编码。有关讨论，请参见<a href="https://en.wikipedia.org/wiki/Unicode" target="_blank" rel="noopener">维基百科</a>引用的文章 <a href="https://tools.ietf.org/html/rfc3629#page-6" target="_blank" rel="noopener">RFC 3629: UTF-8 的 Unicode，ISO 10646 的一种转换格式</a>：</p>
 <blockquote>
-<p>然而，UTF-8标准 RFC 3629 建议禁止在使用 UTF-8 的协议中使用字节顺序标记，但讨论了这可能无法实现的情况。此外，对 UTF-8 中对可能模式有巨大限制（例如，高位集不能有任何单独的字节），这意味着应该可以在不依赖 BOM 的情况下将 UTF-8 与其他字符编码区分开。（<a href="https://en.wikipedia.org/wiki/Unicode" target="_blank" rel="noopener">来源</a>）</p>
+<p>然而，UTF-8 标准 RFC 3629 建议禁止在使用 UTF-8 的协议中使用字节顺序标记，但讨论了这可能无法实现的情况。此外，对 UTF-8 中对可能模式有巨大限制（例如，高位集不能有任何单独的字节），这意味着应该可以在不依赖 BOM 的情况下将 UTF-8 与其他字符编码区分开。（<a href="https://en.wikipedia.org/wiki/Unicode" target="_blank" rel="noopener">来源</a>）</p>
 </blockquote>
 <p>由此得出的结论是，如果应用程序处理的数据可能发生变化，则始终存储用于数据的编码。换句话说，如果编码不总是 UTF-8 或 BOM 的其他编码，那么尝试以某种方式将编码存储为元数据。然后，您可以将该编码与数据一起发送到头部中，以告诉接收者它是什么。</p>
 <p>TCP / IP 中使用的字节顺序是<a href="https://en.wikipedia.org/wiki/Endianness#Big" target="_blank" rel="noopener">大字节序</a>，称为网络顺序。网络顺序用于表示协议栈较低层的整数，如 IP 地址和端口号。Python 的 socket 模块包括将整数转换成网络和主机字节顺序的函数：</p>
 <table>
 <colgroup>
-<col style="width: 22%">
-<col style="width: 77%">
+<col style="width: 11%">
+<col style="width: 88%">
 </colgroup>
 <thead>
 <tr class="header">
