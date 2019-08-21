@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang=en>
-<head>
+<head><meta name="generator" content="Hexo 3.9.0">
     <!-- so meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="description" content="调度常规函数 除了管理协程和 I / O 回调之外，asyncio 事件循环还可以根据循环中的计时器调度常规函数。 立即调度 如果函数执行的时机无关紧要，call_soon() 可以用于在事件循环的下一次迭代中调度函数。 123456789101112131415161718192021222324import asyncioimport functoolsdef callback(arg, *,">
 <meta name="keywords" content="Python,asyncio">
 <meta property="og:type" content="article">
@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="Opstio">
 <meta property="og:description" content="调度常规函数 除了管理协程和 I / O 回调之外，asyncio 事件循环还可以根据循环中的计时器调度常规函数。 立即调度 如果函数执行的时机无关紧要，call_soon() 可以用于在事件循环的下一次迭代中调度函数。 123456789101112131415161718192021222324import asyncioimport functoolsdef callback(arg, *,">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-08-08T14:17:41.250Z">
+<meta property="og:updated_time" content="2019-08-21T15:08:53.772Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="asyncio 不完全指北（二）">
 <meta name="twitter:description" content="调度常规函数 除了管理协程和 I / O 回调之外，asyncio 事件循环还可以根据循环中的计时器调度常规函数。 立即调度 如果函数执行的时机无关紧要，call_soon() 可以用于在事件循环的下一次迭代中调度函数。 123456789101112131415161718192021222324import asyncioimport functoolsdef callback(arg, *,">
@@ -47,7 +47,7 @@
     <!-- rss -->
     
     
-      <link rel="alternate" href="/rss.xml" title="Opstio" type="application/atom+xml" />
+      <link rel="alternate" href="/rss.xml" title="Opstio" type="application/atom+xml">
     
 </head>
 
@@ -128,7 +128,10 @@
       </span>
       
     <div class="postdate">
+      
         <time datetime="2018-04-24T15:43:20.000Z" itemprop="datePublished">2018-04-24</time>
+        
+      
     </div>
 
 
@@ -237,7 +240,7 @@
         
         <footer id="footer">
   <div class="footer-left">
-    Copyright &copy; 2018 MisLink
+    Copyright &copy; 2019 MisLink
   </div>
   <div class="footer-right">
     <nav>
@@ -257,15 +260,36 @@
 </footer>
 
     </div>
-</body>
-</html>
-<!-- styles -->
+    <!-- styles -->
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 <link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
 
-<!-- jquery -->
+    <!-- jquery -->
 <script src="/lib/jquery/jquery.min.js"></script>
 <script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<!-- clipboard -->
+
+  <script src="/lib/clipboard/clipboard.min.js"></script>
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight .code pre").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      target: function(trigger) {
+        return trigger.nextElementSibling;
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
 <script src="/js/main.js"></script>
 <!-- search -->
 
@@ -278,3 +302,5 @@
 
 
 
+</body>
+</html>

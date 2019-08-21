@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang=en>
-<head>
+<head><meta name="generator" content="Hexo 3.9.0">
     <!-- so meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="description" content="使用 aiohttp 作为 Web 服务器 上篇文章中提到，aiohttp 不仅仅是一个 http 客户端，同时也是一个 Web 服务器。在这一节，我们使用 aiohttp 实现一个简单的 Web 程序，同时与 flask 比较一下性能上的差别。 准备工作 首先安装我们需要的第三方库： 12pip install aiohttppip install flask 然后准备好要使用的 Web 容器，">
 <meta name="keywords" content="Python,asyncio">
 <meta property="og:type" content="article">
@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="Opstio">
 <meta property="og:description" content="使用 aiohttp 作为 Web 服务器 上篇文章中提到，aiohttp 不仅仅是一个 http 客户端，同时也是一个 Web 服务器。在这一节，我们使用 aiohttp 实现一个简单的 Web 程序，同时与 flask 比较一下性能上的差别。 准备工作 首先安装我们需要的第三方库： 12pip install aiohttppip install flask 然后准备好要使用的 Web 容器，">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-08-08T14:17:41.251Z">
+<meta property="og:updated_time" content="2019-08-21T15:08:53.773Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="asyncio 不完全指北（七）">
 <meta name="twitter:description" content="使用 aiohttp 作为 Web 服务器 上篇文章中提到，aiohttp 不仅仅是一个 http 客户端，同时也是一个 Web 服务器。在这一节，我们使用 aiohttp 实现一个简单的 Web 程序，同时与 flask 比较一下性能上的差别。 准备工作 首先安装我们需要的第三方库： 12pip install aiohttppip install flask 然后准备好要使用的 Web 容器，">
@@ -47,7 +47,7 @@
     <!-- rss -->
     
     
-      <link rel="alternate" href="/rss.xml" title="Opstio" type="application/atom+xml" />
+      <link rel="alternate" href="/rss.xml" title="Opstio" type="application/atom+xml">
     
 </head>
 
@@ -128,7 +128,10 @@
       </span>
       
     <div class="postdate">
+      
         <time datetime="2018-06-09T09:35:25.000Z" itemprop="datePublished">2018-06-09</time>
+        
+      
     </div>
 
 
@@ -271,7 +274,7 @@
         
         <footer id="footer">
   <div class="footer-left">
-    Copyright &copy; 2018 MisLink
+    Copyright &copy; 2019 MisLink
   </div>
   <div class="footer-right">
     <nav>
@@ -291,15 +294,36 @@
 </footer>
 
     </div>
-</body>
-</html>
-<!-- styles -->
+    <!-- styles -->
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 <link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
 
-<!-- jquery -->
+    <!-- jquery -->
 <script src="/lib/jquery/jquery.min.js"></script>
 <script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<!-- clipboard -->
+
+  <script src="/lib/clipboard/clipboard.min.js"></script>
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight .code pre").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      target: function(trigger) {
+        return trigger.nextElementSibling;
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
 <script src="/js/main.js"></script>
 <!-- search -->
 
@@ -312,3 +336,5 @@
 
 
 
+</body>
+</html>
