@@ -95,6 +95,7 @@ const config = {
             label: "RSS",
             href: "atom.xml",
             position: "right",
+            target: "_blank",
           },
           {
             label: "联系我",
