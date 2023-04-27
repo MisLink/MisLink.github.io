@@ -79,21 +79,21 @@ const config = {
           {
             label: "所有文章",
             position: "left",
-            href: "archive",
+            href: "/archive",
           },
           {
             label: "标签",
             position: "left",
-            href: "tags",
+            href: "/tags",
           },
           {
             label: "关于",
             position: "left",
-            href: "about",
+            href: "/about",
           },
           {
             label: "RSS",
-            href: "atom.xml",
+            href: "/atom.xml",
             position: "right",
             target: "_blank",
           },
