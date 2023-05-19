@@ -15,6 +15,11 @@ const config = {
   url: "https://blog.uoiai.me",
   baseUrl: "/",
 
+  organizationName: "MisLink",
+  projectName: "MisLink.github.io",
+  deploymentBranch: "gh-pages",
+  trailingSlash: false,
+
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
 
