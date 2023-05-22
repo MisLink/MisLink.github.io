@@ -108,8 +108,8 @@ def min_free(lst, l, u):
     m = (l + u) // 2
     if not lst:
         return l
-    left = [i for i in lst if i <= m]
-    right = [i for i in lst if i > m]
+    left = (i for i in lst if i <= m)
+    right = (i for i in lst if i > m)
     if len(left) == m - l + 1:
         return min_free(right, m + 1, u)
     else:
@@ -123,8 +123,7 @@ def min_free(lst, l, u):
 #include <vector>
 using namespace std;
 
-int min_free(vector<int>::iterator begin, vector<int>::iterator end, int l,
-             int u) {
+int min_free(vector<int>::iterator begin, vector<int>::iterator end, int l, int u) {
   int m = (l + u) / 2;
   if (begin == end) {
     return l;
@@ -148,22 +147,22 @@ int min_free(vector<int>::iterator begin, vector<int>::iterator end, int l,
 using namespace std;
 
 int min_free(vector<int> &lst) {
-int l = 0;
-int u = lst.size() - 1;
-auto begin = lst.begin();
-auto end = lst.end();
-while (end - begin) {
-  int m = (l + u) / 2;
-  auto left = partition(begin, end, [m](int i) { return i <= m; });
-  if (left - begin == m - l + 1) {
-    begin = left;
-    l = m + 1;
-  } else {
-    end = left;
-    u = m;
+  int l = 0;
+  int u = lst.size() - 1;
+  auto begin = lst.begin();
+  auto end = lst.end();
+  while (end - begin) {
+    int m = (l + u) / 2;
+    auto left = partition(begin, end, [m](int i) { return i <= m; });
+    if (left - begin == m - l + 1) {
+      begin = left;
+      l = m + 1;
+    } else {
+      end = left;
+      u = m;
+    }
   }
-}
-return l;
+  return l;
 }
 ```
 
