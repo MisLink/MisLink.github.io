@@ -108,8 +108,8 @@ def min_free(lst, l, u):
     m = (l + u) // 2
     if not lst:
         return l
-    left = (i for i in lst if i <= m)
-    right = (i for i in lst if i > m)
+    left = [i for i in lst if i <= m]
+    right = [i for i in lst if i > m]
     if len(left) == m - l + 1:
         return min_free(right, m + 1, u)
     else:
