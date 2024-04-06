@@ -1,8 +1,8 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
-
-const lightCodeTheme = require("prism-react-renderer/themes/nightOwlLight")
-const darkCodeTheme = require("prism-react-renderer/themes/nightOwl")
+const { themes } = require("prism-react-renderer")
+const lightCodeTheme = themes.nightOwlLight
+const darkCodeTheme = themes.nightOwl
 const math = require("remark-math")
 const katex = require("rehype-katex")
 
